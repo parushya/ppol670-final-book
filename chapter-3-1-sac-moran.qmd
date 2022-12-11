@@ -1,0 +1,108 @@
+# Detecting Spatial Autocorrelation {.unnumbered}
+
+In this chapter, we present formal tests for spatial autocorrelation and discuss each test theoretically. We also introduce the core packages for working with spatial regression models in *R*: `library(spdep)` and `library(spatialreg)`. We will apply the tests discussed in this chapter to our Brooklyn example in chapter five. We present and discuss two tests for spatial autocorrelation and distinguish between global and local spatial autocorrelation. By the end of this chapter, readers should be comfortable with the relevant tests for spatial autocorrelation, interpreting the output of these tests, and using the *R* packages needed to run these tests.
+
+## Global vs. Local Spatial Autocorrelation
+
+To review the core concepts of the chapter above, spatial autocorrelation measures the correlation of a variable with itself across space, similar to how serial autocorrelation measures the correlation of a variable with itself across time. Variables that are spatially autocorrelated can either be positively or negatively autocorrelated. If spatial autocorrelation is positive, locations close together have similar values approaching the same values. If spatial autocorrelation is negative, locations close together have more dissimilar values approaching opposite values than those locations further away. See the previous chapter for a more robust discussion.
+
+There are two levels of spatial autocorrelation: global and local. Global spatial autocorrelation quantifies the degree to which areas that are close by tend to be more alike. This is generally what we mean when we use the term spatial autocorrelation. When we discuss global - as opposed to local autocorrelation - we are talking about the degree of clustering, though, not on the specific locations of possible clusters. In other words, global autocorrelation is how similar units are, on average, to their neighbors. Detecting and accouting for global autocorrelation is the first step towards accurate statistical inference in spatial regression models.
+
+In contrast to global autocorrelation, local autocorrelation, also called local indicators of spatial association, or LISA, tells us where clustering is. Some clusters of units may exhibit positive autocorrelation while some others may exhibit negative and a third group of units may have no autocorrelation at all. Global autocorrelation does not account for this heterogeneity and provides only one unified test statistic for global spatial autocorrelation, while LISA estimates more localized spatial autocorrelation. The crucial difference between global and spatial autocorrelation is that only calculating and taking into account global autocorrelation assumes that spatial autocorrelation is homogeneous throughout the distribution of spatial units. This assumption may not hold, so a local test for autocorrelation will be needed. Further, even if our variable does not exhibit global autocorrelation or clustering, we can use LISA to find possible more localized clusters. The exact tests for global and local autocorrelation are discussed next.
+
+## Global Morans I Test
+
+The first test that we consider is Moran's I test. Moran's $I$ test, created by Australian statistician [P. A. P. Moran](https://en.wikipedia.org/wiki/P._A._P._Moran) is a formal test for spatial autocorrelation. Global Moran's $I$ statistic measures spatial autocorrelation simultaneously based on both variable locations and variable values. Given a set of variables and an associated attribute, Moran's $I$ indicates if the pattern of spatial autocorrelation is clustered, dispersed, or random. The null hypothesis for this test is that there is random disturbances, or no spatial autocorrelation, and a statistically significant Moran's $I$ estimate rejects that null hypothesis. As a statistics refresher, $p$-values are numerical approximations of the area under the curve for a known distribution, limited by the test statistic. In other words, $p$-values for Moran's $I$ statistic tell us the probability that we would have seen the extremity of the degree of autocorrelation that we have seen given there was truly no autocorrelation. Similar to standard OLS models, a $p$-value $<.05$ is evidence that we can reject the null hypothesis that there is no spatial autocorrelation. While this is the conventional confidence level, researchers can also consider $p<.01$ or $p<.001$ confidence levels to even more confident that there is, in fact, spatial autocorrelation. Usually we want to see a $p$-value to be as low as possible so that we can be more confident that are result is not due to random chance, but, with testing for spatial autocorrelation, this is perhaps a mistake. We should try to be as aware of possible spatial autocorrelation as possible, meaning we may want to have a confidence level closer to $p<.1$. Setting the threshold $p$-value higher means that we are more likely to reject the null hypothesis for spatial autocorrelation and more likely to choose to estimate some type of spatial regression model to account for even modestly autocorrelated residuals.
+
+Moran's Global I is calculated based on a weighted matrix, with units $_i$ and $_j$. Similarities between units is calculated as the product of the differences between $y_i$ and $y_j$ with the overall mean.
+
+$$I=\frac{N}{W}\frac{\sum_i^{N}\sum_j^{N}w_{ij}(y_i-\bar{y})(y_j-\bar{y})}{\sum_i^{N}(y_i-\bar{y})}$$
+
+-   $N$ is the number of units indexed by $_i$ and $_j$
+-   $y$ is the variable of interest, poverty level in our case.
+-   $\bar{y}$ is the average of our variable of interest
+-   $w_{ij}$ is a matrix of spatial weights with zeroes on the diagonal
+-   $W$ is the sum of all $w_{ij}$ such that ${W=\sum _{i=1}^{N}\sum _{j=1}^{N}{w_{ij}}}$
+
+Defining the exact weights matrix is vital to calcualting Moran's I because he value of $I$ depends on the assumptions built into the spatial weights matrix $w_{ij}$. The spatial weights matrix constrains he number of neighbors being considered and weights appropriately. In other words, we expect a unit's closest neighbors to be most similar to it, while further distant neighbors may not be at all influenced.
+
+There are several methods to assign weights. Researchers can assign a weight of 1 if neighbors are nearby and a weight of 0 otherwise; can assign weights based on a $k$ nearest neighbors approach where the $k$ nearest neighbors receive a weight of 1 and 0 otherwise. The decision of weighting is important because the estimate, and resulting $p$-value of Moran's I statistic is heavily dependent upon weighting. `library(spdep)` offers functions to weight based on each option enumerated above.
+
+`spdep::poly2nb()` evaluates the spatial distribution of a variable to estimate how similar a unit, $i$ is to their neighbor, $j$. `spdep::nb2listw()` then constructs the weights. Each function takes specific arguments concerning how to weight, specifically how high to weight nearby neighbors and whether to weight far away neighbors as a low number or zero. For the $k$ nearest neighbors approach, `spdep::knearneigh()` and `spdep::knn2nb()` can construct the weights for neighbors if you have point data.
+
+Calculating Moran's I statistics by hand is a quite cumbersome process, so we focus on the function `spdep::moran.test()` which takes the result of the above two functions and returns the estimate of $I$ and the resulting $p$-value.
+
+## Local Spatial Autocorrelation (LISA)
+
+One weakness of Moran's global I is that is assumes homogeneity in spatial autocorrelation. If different clusters are neighbors are auto correlated significantly differently than others, then the global I is insufficient for purging autocorrelation from the error terms in our models. For a better test statistic, we turn to LISA, or local indicators of spatial association which calculates Moran's I for each individual spatial unit based on the following formula:
+
+$$I=\sum_{i=1}^{N}{\frac{I_{i}}{N}}$$
+
+Where:
+
+-   $I_i$ is the local Moran's I statistics and $N$ is the number of spatial units.
+
+Beyond using local Moran's I when the homogeneity assumption is violated, there are several benefits of calculating LISA. Local Moran's I can identify local clusters and outliers that are surrounded by opposite values. When we are thinking about local spatial autocorrelation, there are four cluster relationships to keep in mind. High-high, or that units have high values of a variable with neighbors that also have high values; High-Low, or units that have high values of a variable with neighbors that have low values; low-high, or units that have low values of a variable with neighbors that have high values; and low-low, or units that have low values of a variable with neighbors that also have low values. Local Moran's I, calculated with `spdep::localmoran()` can identify these different types of clusters and better characterize the spatial autocorrelation that we are seeing with our variable.
+
+Just as `library(spdep)` makes calculating global autocorrelation straightforward and easy, LISA is easily calculated with `localmoran()`. As shown in the applied section in the fifth chapter, we can visualize local autocorrelation easily with `library(ggplot2)`.
+
+With global versus local spatial autocorrelation defined and discussed theoretically, we turn to the last more theoretical chapter before undertaking our applied analysis that goes through each concept we have discussed so far and shows researchers how to utilize `library(spdep)` to estimate spatial regression models.
+
+## Intuition and Simulation  
+```{r, include=FALSE}
+library(patchwork)
+source("parushya.R", local = knitr::knit_global())
+# or sys.source("your-script.R", envir = knitr::knit_global())
+
+
+```
+Here we see three renditions with different distributions of outcome variables in a `5x5` matrix of grid cells.  
+The first matrix has two clear clusters of data. Another way to look at it in the context of discussion above is - the neighbors have values very similar to each other in the two parts in the matrix. Hence, we see a high positive value of Global Moran as given above the figure.  
+
+Similarly, in the second figure, we see that all the immediate neighbors (that is those that share boundary with a cell), have value different from the cell under observation. Consequently, we see a Global Moran I statistic of `-1`.  
+In the third figure we have a bit more random distribution of values. Thus, we see a Global Moran I statistic close to `0`.  
+
+```{r echo=FALSE, fig.width=12, fig.height=5}
+p_pac + p_nac + p_zac
+```
+
+
+To understand the concept of Local Moran I, we simulate a different matrix grid. This time, the oucome variable is drawn from a continuous multivariate normal distribution.  
+
+```{r}
+
+# The code for this section is adapted from: https://rpubs.com/jguelat/autocorr
+
+#Define function to draw random samples from a multivariate normal
+# distribution
+rmvn <- function(n, mu = 0, V = matrix(1)) {
+  p <- length(mu)
+  if (any(is.na(match(dim(V), p)))) 
+    stop("Dimension problem!")
+  D <- chol(V)
+  t(matrix(rnorm(n * p), ncol = p) %*% D + rep(mu, rep(n, p)))
+}
+
+# Set up a square lattice region
+simgrid <- expand.grid(1:20, 1:20)
+n <- nrow(simgrid)
+
+# Set up distance matrix
+distance <- as.matrix(dist(simgrid))
+# Generate random variable
+phi <- 0.05
+X <- rmvn(1, rep(0, n), exp(-phi * distance))
+
+# Visualize results
+Xraster <- rasterFromXYZ(cbind(simgrid[, 1:2] - 0.5, X))
+par(mfrow = c(1, 2))
+#plot(1:100, exp(-phi * 1:100), type = "l", xlab = "Distance", ylab = "Correlation")
+plot(Xraster, main = "Distribution")
+f <- matrix(c(0,1,0,1,0,1,0,1,0), nrow=3)
+plot(MoranLocal(Xraster, w=f), main = "Local Moran I")
+```
+
+The plot on the left is the distribution of a continuous random variable on a `20x20` matrix. The greener the cell the higher the value.  
+The plot of the right is a matrix of same dimension showing Local Moran I for each cell.  While the interpretation is a bit tricky, we can use the heuristic that greener the cell, the more similar are their immediate boundary sharing neighbors.   
+
+

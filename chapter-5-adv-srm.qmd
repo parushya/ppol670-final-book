@@ -1,0 +1,76 @@
+## Advanced Spatial Regression Modeling {.unnumbered}
+
+Spatial lag and spatial error models are the workhorses of spatial
+regression. Understanding these two models equips researchers to
+reliably model spatial relationships with well-behaving data, but other
+methods may be needed for severe or hetergenous spatial autocorrelation.
+While utilizing either a spatial error or a spatial lag model will give
+researchers far more accurate standard errors, and therefore statistical
+inferences, than a basic OLS model, we still want to check Moran's I on
+the residuals of our models. We can also think about even more expansive
+methods to deal with severe spatial autocorrelation that may not be
+entirely purged by the prior two models.
+
+A SAC/SARAR model combines the two approaches above. We both include a
+lagged term and model the spatial autocorrelation in the error term.
+
+$$Y_i=\rho_{lag}\ W_iY_i + \beta\ V_i + \delta \Lambda' + \nu_i \\ \nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i$$
+
+-   $\rho_{lag}$ is the degree of autocorrelation
+-   $W_i$ is an observations weighted by its neighbors
+-   $\beta\ V_i$ is our main independent variable and coefficient
+-   $\delta \Lambda'$ is our control variables
+-   $\nu$ is the spatially autocorrelated errors
+-   $lamba$ is the spatial constant
+-   $W_i$ is the weighted error of an observations neighbors
+-   $\epsilon$ is the now purged of spatial autocorrelation error term
+
+When spatial heterogeneity exists in our data, we can still see
+homoscedastic errors even when utilizing spatial lag and spatial error
+models. In these cases, we should use geographically weighted regression
+or a Bayesian hierarchical spatial model. We can use the tools already
+discussed in this guide to estimate a geographically weighed regression
+model, but Bayesian hierarchical models rely on the use of WinBUGs or
+GeoBugs. Bayesian hierarchical spatial models have become quite widely
+used in the epidemiology and public health departments, but is not used
+much yet in the social sciences. The key strength of Bayesian
+hierarchical models is that they model the complex levels inherent in
+spatial data and flexibly model different types of spatial
+autocorrelation.
+
+Geographically Weighted Regression (GWR) is most prominently used in
+geography, but it has applications to the social sciences, namely when
+our data exhibits heterogeneous spatial autocorrelation. GWR estimates a
+local model of the unit or process that we are studying by fitting a
+regression to every variable in the dataset. GWR estimates separate
+models by including the dependent and independent variables of the units
+falling either within the neighborhood of each unit or the $k$ nearest
+neighbors of each unit. GWR is, however, not without its limitations and
+it requires the use of different packages than the models above. The
+main limitation of GWR is that you need a lot of units, or else the
+weights may over weight some units, and GWR cannot accommodate
+multipoint data. You can estimate a GWR model in *R* with
+`library(GWmodel)`, but the process takes several more steps than
+spatial error or spatial lag models.
+
+We begin by estimating the optimal bandwidth to define local
+neighborhoods of each unit in our analysis with `GWmodel::bw.gwr`. We
+can define our neighborhoods with the `bandwidth` argument. Once we have
+estimated our optimal bandwidth, we can run a GWR model with
+`GWmodel::gwr.basic()`. Now we will have our regression results
+accounting for heterogeneity in our data's spatial autocorrelation.
+
+As one final note, we have covered four types of models and many more
+exist. It is always a good idea to run your analysis on a series of
+different models to ensure consistent results and robustness of
+findings. Model selection for spatial regression can be decided by
+comparing psudeo-$R^2$s or Akiake Information Criterions ($AIC$). An
+applied example of this is discussed in the next chapter.
+
+This chapter introduced the core models needed to implement spatial
+regression and overviewed more advanced methods when spatial lag and
+spatial error models still exhibit some degree of spatial
+autocorrelation. In the next chapter, we leave the ivory tower of
+well-behaving statistical theory behind and enter the basement of data
+analysis to conduct a full spatial analysis studying the effect of
+education on poverty in Brooklyn, New York.

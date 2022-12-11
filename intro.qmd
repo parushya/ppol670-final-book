@@ -1,9 +1,91 @@
-# Introduction
+# Basics of Geospatial Data {.unnumbered}
 
-This is a book created from markdown and executable code.
+In this short introduction, we discuss prerequisites, offer some
+motivations, and cover basic geospatial analysis in *R*. To showcase the
+power of geospatial analysis for applied researchers, we rely on an
+application of spatial analysis to explore poverty and education in New
+York. By the end of this chapter, you should be comfortable finding,
+cleaning, and visualizing the spatial data that you are interested in.
+Only when you have mastered these concepts, can you confidently begin to
+model spatial relationships.
 
-See @knuth84 for additional discussion of literate programming.
+## Motivation  
+Geospatial data is ubiquitous in the social sciences and tools to
+systematically analyze spatial variables and spatial relationships
+should be a part of every data scientist and social scientist's toolkit.
+From visualizing election returns in American politics to depicting
+different countries' gross domestic products (GDP), the ability to make
+a map is immensely useful. Every article concerning state and local
+politics in political science will usually showcase a map of states or
+counties at some point in order to effectively illustrate the variables
+important to the analysis. Macroeconomists and comparative political
+scientists conducting cross-national studies similarly use maps to
+illustrate the spatial distribution of their key variables. Even when
+researchers are modeling relationships that are not inherently spatial,
+including a map is a powerful visualization technique.
 
-```{r}
-1 + 1
+If the unit of analysis is a spatial unit - such as country-level,
+state-level, county-level or topographical, maps are perhaps the best
+way to visualize the distribution of your variables of interest across
+space. Further, sociologists, economists, and epidemiologists who are
+interested in examining crime and health data will find particular
+advantages in being able to map crime rates, the prevalence of a
+disease, or the health outcomes in different areas of a town or city.
+Public administration and policy researchers who want to make
+recommendations to decision-makers about where to build police stations,
+hospitals, fire departments, parks, or concentrate COVID vaccination and
+testing supplies, public assistance benefits, and relief efforts from
+inclement weather can utilize a well-made map and spatial regression
+techniques to draw conclusions from.
+
+Perhaps most importantly, researchers who want their work to be
+public-facing and read by people without technical expertise could find
+more success by displaying their results and analysis through maps than
+through tables or even other, non-map, data visualizations.
+
+Geospatial data is also extremely common and readily available, with
+easy access to US Census data through `library(tidycensus)` and
+shapefiles and spatial data available through many cities, states, and
+government agencies' data repositories. The use of application
+programming interfaces (APIs) has made accessing the wealth of spatial
+data collected by the world's governments and businesses extremely easy.
+`library(sf)` also works well with `library(dplyr)` and
+`library(ggplot2)` to make creating attractive maps just as easy as
+accessing spatial data, overcoming the inherent challenges with spatial
+data being multidimensional.
+
+As a data scientist or social scientist thinking through their research
+design and deliberating on the nature of the relationship they want to
+model, if the variables or relationship that is decided on is spatial,
+then making a basic map and thinking through the spatial distribution of
+important variables, should be the researchers first step. Where do
+researchers go after the creation of their map, though? The goal of this
+treatment on spatial regression is to equip applied researchers with the
+tools and theoretical background needed to go a step beyond mere
+visualization and discussion of geospatial data to estimating geospatial
+regression models. Further, readers will learn when spatial
+autocorrelation could render standard errors from OLS models incorrect
+and how to detect spatial autocorrelation in spatial data. Essentially,
+whenever a researcher is modeling a relationship that has spatial
+autocorrelation, they should use one of the techniques described in this
+work to purge autocorrelation from the error term of their models. After
+reading this, researchers will know when to use spatial regression
+methods and how to visualize the results of spatial regression models.
+
+## Two Types of Spatial Data
+
+Spatial Data provides information on 'something' with respect to its location. This information is called _attribute_. In itself, attribute is not spatial data. In combination with information about it's position it becomes spatial data.  
+_Temperature_ at a point when combined with latitutde or longitude, _height of a person_ in a room with respect to distance from two walls, etc., are all examples of attributes with information of location becoming spatial data.  
+Purely spatial information of entities are represented by data models. Basic types of data models that we come across in geospatial analysis are the following:  
+1.    Point - A single point.  
+2.    Line - A stream of ordered points connected by straignt line segments.  
+3.    Polygon - A set of lines forming a closed loop enclosing an area.  
+4.    Grid - A collection of points or rectangular cells, orgnaised in regular lattice.  
+
+The first three are known as __Vector Data__, and represent entities as exactly as possible while the the last one composes of __Raster Data__. Raster data is used to represent continuous values by breaking them into finer tesselations (Bivand et al, 2008).     
+Same data can be expressed as both raster and vector data types. Just that in raster form, they are stored as values of pixels in amatrix of cells, in vector they are stored as values attrbutes in association with a set of coordinates.  
+Shapefiles that we have been using are an example of vector data and and satellite images are examples of raster data.  
+```{r echo=FALSE}
+knitr::include_graphics("vector_raster.png") 
 ```
+Photo by: [GISlounge](https://www.gislounge.com/geodatabases-explored-vector-and-raster-data/ )

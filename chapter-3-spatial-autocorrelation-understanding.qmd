@@ -1,0 +1,115 @@
+# Spatial Autocorrelation {.unnumbered}
+
+
+Congratulations, you have defined a research question, developed a
+theory, collected spatial data, visualized your variables of interest
+with a map, and now you are ready to estimate a causal effect or make
+some prediction about a spatial relationship. The logical first step is
+estimate the workhorse model of social science: ordinary least squares.
+If your variables contain spatial autocorrelation, which is common in
+most spatial relationships, the OLS equation for standard errors will
+not be appropriate. This means that your standard errors will be
+incorrect, resulting in incorrect statistical inference. The same
+phenomenon is seen with time series data, if you are familiar, where
+methods such as $\rho$-transforming time series data or estimating
+Prais-Winston or Newey-West standard errors is needed to draw accurate
+inferences. Similar methods can be used to purge spatial autocorrelation
+from our models. In time series data, autocorrelation refers to the
+residuals in time period $t_{-1}$ being correlated with the residuals in
+time period $t$. In spatial data, autocorrelation refers to the
+residuals in unit $i$ being correlated with the residuals in unit $j$.
+
+In this chapter, we move away from the applied example of education and
+poverty in Brooklyn in order to introduce spatial autocorrelation. We
+start by introducing a naive OLS model of a spatial relationship and
+discuss how spatial autocorrelation violates the Gauss-Markov assumption
+that errors are not correlated with each other. We further present the
+concept of spatial autocorrelation and run a simulation to illustrate
+it. By the end of this chapter you should be comfortable with the
+concept of spatial autocorrelation and why it violates the Gauss-Markov
+assumptions.
+
+## A Naive Model of Spatial Data
+
+Before we get into a discussion and simulation of spatial
+autocorrelation, let's first discuss why OLS is inappropriate to use
+when modeling spatial relationships. Consider the basic multiple
+regression model below:
+
+$$Y_{i}=\alpha + \beta\ X_{i} + \delta \Lambda' + \nu_{i}$$
+
+In this model, we have our dependent variable, or outcome concept,
+$Y_i$, the intercept, $\alpha$, or the average of $Y$ when all predictor
+variables are 0, $\beta$, the coefficient on our main predictor
+variable, or causal concept, $X_i$, $\delta \Lambda '$, a term for the
+matrix of covariates and their estimated effects on our dependent
+variable, and $\nu_i$, the error term of our model. While a robust
+discussion of the exact properties of OLS is assumed as prerequisite
+knowledge and a more thorough examination of the Gauss-Markov
+assumptions is outside the scope of this book, below we present the
+Gauss-Markov assumptions for OLS to be the best linear unbiased
+estimator (Greene 2018).
+
+-   Assumption I: Linearity
+    -   $y=X\beta+\epsilon$
+-   Assumption II: Full Rank
+    -   $X$ is a $n\times K$ matrix with rank $K$
+-   Assumption III: Exogeneity
+    -   $E[\epsilon_{i}|X]=0$
+-   **Assumption IV: Homoscedasticity and No Autocorrelation**
+    -   $E[e_ie_j|X]=0$
+-   Assumption V: Data Generating Process
+    -   $X$ may be fixed or random
+-   Assumption VI: Errors Normally Distributed
+    -   $\epsilon | X \sim N[0, \sigma^2I]$
+
+While its important all of these assumptions are met, the key assumption
+to notice for our purposes here is *Assumption IV: Homoscedasticity and
+No Autocorrelation.* In order for OLS to be the best linear unbiased
+estimator (BLUE), the errors must have constant variance and not be
+correlated with one another. Errors that do not have constant variance
+are called heteroscedastic errors. Autocorrelation refers to errors
+being correlated with one another. In the time series context, as
+mentioned above, autocorrelation refers to when the errors in $t_1$ are
+correlated with the errors in $t_{-1}$. This is a problem for spatial
+units as well. As Waldo Tobler says, "everything is related to
+everything else, but near things are more related than distant things."
+This means that we can expect clusters in our distribution of our
+variables of interest across our spatial units.
+
+For example, look at the Brooklyn maps in chapter one, the northeast of
+Brooklyn is a cluster of higher educated New Yorkers, suggesting some
+degree of spatial autocorrelation. When our data is spatially
+autocorrelated, as long as the other assumptions are not violated, OLS
+will give us unbiased estimates of $\beta$ and our other coefficients,
+but the standard errors will be inaccurate due to the no autocorrelation
+assumption being broken. Using a naive OLS model will lead to possible
+incorrect statistical inference and inaccurate depictions of our
+uncertainty in predictions. More specifically, $\nu_i$ in the model
+above contains the spatial autocorrelation between units $i$ and $j$
+that make OLS inappropriate for estimating a relationship between $X_i$
+and $Y_i$. The resulting correlation of the error term must be obviated
+before we can estimate correct standard errors.
+
+## Consequences of Using OLS when Residuals are Autocorrelated
+
+Staking ones academic reputation or making policy decisions based on a
+naive estimate of a spatial relationship risks a researcher losing
+credibility due to inaccuracy. Further, false inference could lead a
+city government to build a new police station in a sub-optimal location
+based on a poorly estimated spatial model. Spurious relationships are
+similarly as likely to be detected because both variables in the model
+are correlated spatially, again leading to incorrect inferences. Because
+of the risks of inaccuracy, it is vitally important that researchers do
+not utilize basic OLS models when estimating a relationship that
+exhibits spatial autocorrelation. Spatial autocorrelation, and spatial
+regression more broadly, is largely an issue of ensuring accuracy in
+statistical inference based on our model results.
+
+The goal of these brief sections is to review the Gauss-Markov
+assumptions and show what researchers need to be careful when estimating
+spatial relationships that exhibit spatial autocorrelation to ensure
+they will be getting the correct standard errors. We will learn methods
+in the chapter three to detect spatial autocorrelation and methods in
+chapter four to purge it from the error terms in our models, but, first,
+we present the concept of spatial autocorrelation in more detail.

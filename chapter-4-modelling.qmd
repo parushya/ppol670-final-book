@@ -1,0 +1,93 @@
+# Modeling Spatial Relationships {.unnumbered}
+
+We have discussed in previous chapters why OLS is inappropriate to use
+when variables exhibit spatial autocorrelation. We have also covered how
+to measure if a variable exhibits spatial autocorrelation. This chapter
+covers the next step: estimating spatial regression models. At this
+point, a researcher would have visualized their spatial data, tested for
+spatial autocorrelation, and must now make the decision of model
+selection. We will cover the two dominate models used to estimate
+spatial regressions: the spatial error model and the spatial lag model.
+Both models have analogs, like every aspect of spatial regression, to
+time series analysis. By the end of this chapter, readers will be
+comfortable with the theoretical underpinnings and modeling techniques
+for both spatial error and spatial lag models. We also cover more
+complex modeling choices that combine spatial lag and spatial error
+techniques, handle heterogeneity in spatial autocorrelation, and
+geographically weighted regression. These models, and by extension this
+chapter, is the core and most important aspect of spatial regression. By
+following the steps discussed here, and shown in detail in chapter five,
+researchers can estimate models with confidence that there standard
+errors are accurate and any and all spatial autocorrelation is purged
+from their error term.
+
+The problem when analyzing spatial data is that our errors are
+autocorrelated due to the similarity of nearby neighbors. For example,
+we can expect census tracts nearby one another in Los Angeles, CA to
+have more similar crime rates than census tracts across the city from
+each other. We need a specification that accounts for spatial
+autocorrelation or else our standard errors will be incorrect. For this,
+we have two main options as mentioned above: spatial error models and
+spatial lag models. We begin first by discussing spatial error models.
+
+## Spatial Error Model
+
+In the previous section, we discussed how our error term contains
+spatial autocorrelation causing our standard errors to be incorrect.
+Spatial error models account for the spatial autocorrelation in our
+residuals. The central theory of spatial error models is that spatial
+autocorrelation can be modeled by as a weighted mean of the residuals of
+a unit's neighbors. Spatial error models specifically model the error
+term while spatial lag models, the topic of the next session, is a type
+of autoregressive method.
+
+In spatial error models, we weight based on the errors of an
+observation's neighbors, modelling the error term as follows:
+
+$$Y_{i}=\alpha + \beta\ X_{i} + \delta \Lambda' + \nu_{i}\\ \nu=\lambda_{Err}\ W_i\nu_i + \epsilon_i$$
+
+Where: - $lamba$ is the spatial constant - $W$ is the weighted error of
+an observations neighbors - $\nu$ is the spatially autocorrelated
+errors - $\epsilon$ is the now purged of spatial autocorrelation error
+term
+
+The key takeaway from the equations above is that once we weight the
+neighbor's residuals, our new error term $\epsilon_i$ is purged of
+spatial autocorrelation. Now we can move forward estimating our spatial
+relationship and confidently know that spatial autocorrelation will not
+be affecting our residuals. Using `spatialreg::errorsarlm()`, which
+takes arguments for your model and your weighted errors estimates a
+spatial error model. You can then use the results to rerun
+`spdep::moran.test()` and the result should no longer be statistically
+significant at the $p<.05$ level.
+
+## Spatial Lag Model 
+
+As opposed to spatial error models modeling the part of the error term
+that is autocorrelated, in a spatial lag model, we include a lagged
+term, again similar to time series lagged DV models. A spatial lag
+variable averages the weighted neighboring values of a unit. Spatial
+lags models are to compare a unit's values with its neighbors. The
+weighted matrix, discussed above, defines what units are a unit's
+neighbors and how much to weight them. We can use standardized weights
+from `library(spdep)`. Usually, the unit at the center of its defined
+list of neighbors is not included in the definition of neighbors and the
+weight of that unit is set to zero.
+
+A spatial lag model looks like:
+
+$$Y_i=\rho_{lag}\ W_iY_i + \beta\ V_i + \delta \Lambda' + \epsilon_i$$
+
+Where:
+
+-   $Y_i$ is our dependent variable
+-   $\rho_{lag}$ is the degree of autocorrelation
+-   $W_i$ is an observations weighted by its neighbors
+-   $\beta\ bachelor_i$ is our main independent variable and coefficient
+-   $\delta \Lambda'$ is our control variables
+-   $\epsilon_i$ is the now-purged of autocorrelation error term
+
+Similar to the result of the spatial error model, our new error term,
+$\epsilon_i$ is entirely purged of spatial autocorrelation. Now, when we
+estimate our main model, our standard errors will be corrected for
+spatial autocorrelation.

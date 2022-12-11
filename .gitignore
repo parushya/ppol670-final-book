@@ -1,0 +1,168 @@
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# pkgdown site
+docs/
+
+# translation temp files
+po/*~
+
+# RStudio Connect folder
+rsconnect/
+
+* Data folder
+*/raw/
+*/clean/
+
+* File Types
+*.pdf
+*.csv
+*.xlsx
+*.png
+*.jpeg
+*.RData
+*.rds
+
+# Latex files
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.nav
+*.snm
+*.toc
+*.gz
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.sta
+*.gz
+*.gz(busy)
+*.synctex(busy)
+*.png
+*.txt
+
+# Latex files
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.nav
+*.snm
+*.toc
+*.gz
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.sta
+*.gz
+*.gz(busy)
+*.synctex(busy)
+*.png
+*.txt
+
+# Overleaf files
+*.bcf
+*.run
+*.xml
+
+# R files
+*.Rproj.user
+*.Rhistory
+*.Rapp.history
+*.rds
+*.rda
+*.Rdata
+
+# Stata files
+*.dta
+*.gz
+
+# Data files
+*.csv
+*.dbf
+*.shp
+*.prj
+*.shx
+*.sbn
+*.xlsx
+*.xls
+
+# Microsoft Office Files
+*.docx
+*.doc
+
+# Sublime Files
+*.sublime-workspace
+*.sublime-project
+
+# Media Files
+*.m4a
+*.mp4
+
+# Miscellaneous
+*.zip
+*.dropbox
+*.sbx
+*.ini
+*.DS_Store
+*.here
+#*.pdf
+*.missRecode
+
+# Folder
+*/data/
+
+# Credentials
+*.env
+
+
+
+
+/.quarto/
+.Rproj.user
+
+*.data/
+*._book/
