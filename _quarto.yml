@@ -4,7 +4,7 @@ project:
 
 book:
   title: "Spatial Regression"
-  subtitle: "For PPOL670"
+  subtitle: "A Practical Introduction"
   author: "Benjamin Reese, Parushya, Sarah Hayes"
   date: "12/12/2022"
   chapters:

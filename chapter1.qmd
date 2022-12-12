@@ -24,7 +24,7 @@ Purely spatial information of entities are represented by data models. Basic typ
 3. Polygon - A set of lines forming a closed loop enclosing an area.\
 4. Grid - A collection of points or rectangular cells, organised in regular lattice.
 
-The first three are known as **Vector Data**, and represent entities as exactly as possible while the the last one composes of **Raster Data**. Raster data is used to represent continuous values by breaking them into finer tessellations (Bivand et al, 2008).\
+The first three are known as **Vector Data**, and represent entities as exactly as possible while the the last one composes of **Raster Data**. Raster data is used to represent continuous values by breaking them into finer tessellations (Bivand et al. 2008).\
 Same data can be expressed as both raster and vector data types. Just that in raster form, they are stored as values of pixels in amatrix of cells, in vector they are stored as values attributes in association with a set of coordinates.\
 Shapefiles that we have been using are an example of vector data and and satellite images are examples of raster data.
 
@@ -90,6 +90,7 @@ m2 <- brook_shape %>%
        fill=NULL, caption = "Data Source: 2012 ACS")
 m2
 ```
+
 Mapping the proportion of Brooklyn residents with a bachelor's degree in each census tract shows that the Northwest part of Brooklyn is highly educated, and there are some clustered census tracts of high bachelor's degree attainment throughout the city, but the majority of the census tracts in Brooklyn have below the average rate of college educated residents. Now that we have our maps, we can display them side-by-side using `library(patchwork)` to try and draw informal inferences from the distributions of poverty rates and bachelor degree holders.
 
 ```{r motivating map 3 , warning=FALSE,message=FALSE}
