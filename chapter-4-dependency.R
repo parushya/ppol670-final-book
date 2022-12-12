@@ -13,7 +13,11 @@ ny_shape <-
 brook_shape <- ny_shape %>%
   filter(boroname == "Brooklyn", poptot>200) %>%
   mutate(poverty_rate=(poor/poptot),
-         bach_rate = (onlybachel/poptot))
+         bach_rate = (onlybachel/poptot),
+         per_asian = (asian/poptot),
+         per_aa = (african/poptot),
+         per_his = (hispanic/poptot),
+         lab_force_rate =(popinlabou/popover18))
 
 m1 <- brook_shape %>%
   ggplot(aes(fill=poverty_rate)) +

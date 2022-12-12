@@ -169,21 +169,26 @@ Where:
 - $\delta \Lambda'$ is a matrix of covariates and a vector of their coefficients
 - $\nu_i$ is the error term which we can test for spatial autocorrelation
 
-Knowing that our data is spatially autocorrelated, we want to use the techniques discussed in previous chapters to purge our error term of spatial autocorrelation. For illustrative purposes, however, we will first estimate the above OLS model. We take the additional step of logging our independent variables to both linearize their relationship with $poverty_i$ and to ensure our errors will be as symmetrically distributed as possible. We include covariates for the proportion of a census tracts' population that is a part of minority identity groups such as African-American, Asian, and Hispanic and a variable that indicates labor force participation. Our analysis here is quite basic and only intended for illustrative purposes. The code below runs two models with `lm()` and saves the results as `ols.` and `ols.2`. 
+Knowing that our data is spatially autocorrelated, we want to use the techniques discussed in previous chapters to purge our error term of spatial autocorrelation. For illustrative purposes, however, we will first estimate the above OLS model. We include covariates for the proportion of a census tract's population that is part of a minority identity group such as African-American, Asian, and Hispanic and a variable that indicates the tract's labor force participation rate. Our analysis here is quite basic and only intended for illustrative purposes. The code below runs two models with `lm()` and saves the results as `ols.` and `ols.2`. We further use the `AIC()` command to calculate AIC values which will be used for model selection criteria.
 
 ```{r ols models}
 ## OLS Models
-ols.1 <-lm(poverty_rate~log(1 + bach_rate), data=brook_shape)
-ols.2 <-lm(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + africaninl) + 
-             log(1 + asianinlab) + log(1 + hispanicin), data=brook_shape)
+ols.1 <-lm(poverty_rate~bach_rate, data=brook_shape)
+ols.2 <-lm(poverty_rate~bach_rate + lab_force_rate +  per_aa + 
+             per_asian + per_his, data=brook_shape)
+
+## Calculating AIC
+ols.1$AIC <- AIC(ols.1)
+ols.2$AIC <- AIC(ols.2)
 ```
 
 We can then visualize the results with `library(stargazer)`.
 
 ```{r ols table, echo=FALSE, results='asis', warning=FALSE, echo=FALSE, message=FALSE}
-stargazer(ols.1, ols.2, type = "html", header=FALSE, dep.var.labels = c("Poverty Rate", "Poverty Rate"),
+stargazer(ols.1, ols.2, type = "html", header=FALSE, 
+          dep.var.labels = c("Poverty Rate", "Poverty Rate"),
           covariate.labels = c("Bachelor's Degree", "Labor Force", "African-American Pop",
-          "Asian Pop", "Hispanic Pop"), title = "OLS Results")
+          "Asian Pop", "Hispanic Pop"), title = "OLS Results", keep.stat = c("aic", "rsq", "n"))
 ```
 
 Let's examine the results. Our null hypothesis is that higher rates of residents with bachelor degrees in a census tract will have no effect on a census tract's poverty rate. In both the simple regression model and the multiple regression model, the bachelor's degree variable is statistically significant. Our $p$-value is extremely close to zero and the 95% confidence interval does not cross zero, providing evidence to reject the null hypothesis that there is no relationship between rates of college education and rates of poverty for census tracts in Brooklyn. 
@@ -203,17 +208,18 @@ brook_nb <- brook_shape %>%
 
 Now with the weights created, we can estimate a spatial error model with `errorsarlm()`. We estimate both a simple and multiple regression model with the same control variables that are included above in the OLS model. There are some additional arguments beyond what is required for an OLS models to properly use `errorsarlm()`. The weights must be included, which we named brook_nb, we need to specify `zero.policy=TRUE` which allows weights to equal zero, and omit NAs. The spatial error model is:
 
-$$poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}\\ \nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i$$
+$$poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}$$
+$$\nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i$$
 The following code estimates the model: 
 
 ```{r err models}
 ## Spatial Regression Models
-spat_err.1 <- errorsarlm(poverty_rate~log(1 + bach_rate), data=brook_shape,
+spat_err.1 <- errorsarlm(poverty_rate~bach_rate, data=brook_shape,
                          listw = brook_nb, zero.policy = TRUE, na.action = na.omit)
 
-spat_err.2 <- errorsarlm(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + africaninl)+
-                         log(1 + asianinlab) + log(1 + hispanicin), data=brook_shape,
-                         listw = brook_nb, zero.policy = TRUE, na.action = na.omit)
+spat_err.2 <- errorsarlm(poverty_rate~bach_rate + lab_force_rate +  per_aa + 
+                           per_asian + per_his, data=brook_shape,
+                           listw = brook_nb, zero.policy = TRUE, na.action = na.omit)
 ```
 
 ```{r err table, echo=FALSE, results='asis'}
@@ -223,9 +229,17 @@ stargazer(spat_err.1, spat_err.2, type = "html", header = FALSE,
           "Asian Pop", "Hispanic Pop"), title = "Spatial Error Results")
 ```
 
-The statistically significant, $p <.01$, estimate of $\lambda$ above indicates that the error term was spatially autoregressive. Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of `errorsarlm()` using the `summary()` function (not shown here) in base R provides information about how well the spatial error model *and* the OLS mdoel performed. The AIC for the spatial error model is -1534.8 and the AIC for the OLS model is -1319, indicating that the spatial error model performed better than OLS. 
+The statistically significant, $p <.01$, estimate of $\lambda$ shown when we run `summary()` indicates the error term was spatially autoregressive. 
 
-In terms of substantive results, we can see that the percent Asian variable has lost statistical significance. Overall, however, the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor's degree, remains statistically significant at the $p<.01$ level and has a similar, yet not exactly the same, coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainty in the OLS model.
+```{r summary tables 1}
+## Summary Table 2
+summary(spat_err.2)
+```
+
+
+Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of `errorsarlm()` using the `summary()` function (not shown here) in base R provides information about how well the spatial error model *and* the OLS mdoel performed. The AIC for the spatial error model is $\approx$ -1574 and the AIC for the OLS model is $\approx$ -1334, indicating that the spatial error model performed better than OLS. 
+
+In terms of substantive changes, there are few. We see no significant changes in the statistical significance of the variables in the model. Overall the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor's degree, remains statistically significant at the $p<.01$ level and has a similar, yet not exactly the same, coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainty in the OLS model.
 
 ## Spatial Lag Results
 
@@ -236,11 +250,11 @@ $$poverty_i=\rho_{lag}\ W_ipoverty_i + \beta\ bachelor_i + \delta X' + \epsilon_
 Recall from the previous chapter that we include a weighted lagged dependent variable as an independent variable. We can use nearly the same code as for the spatial error model, expect we substitute `lagsarlm()` for `errorsarlm()`
 
 ```{r lag models}
-spat_lag.1 <- lagsarlm(poverty_rate~log(1 + bach_rate), data=brook_shape,
+spat_lag.1 <- lagsarlm(poverty_rate~bach_rate, data=brook_shape,
                        listw = brook_nb, zero.policy = TRUE, na.action = na.omit)
 
-spat_lag.2 <- lagsarlm(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + africaninl) + 
-                           log(1 + asianinlab) + log(1 + hispanicin), data=brook_shape,
+spat_lag.2 <- lagsarlm(poverty_rate~bach_rate + lab_force_rate +  per_aa + 
+                         per_asian + per_his, data=brook_shape,
                          listw = brook_nb, zero.policy = TRUE, na.action = na.omit)
 ```
 
@@ -251,9 +265,16 @@ stargazer(spat_lag.1, spat_lag.2, type = "html",
           "Asian Pop", "Hispanic Pop"), title = "Spatial Lag Results")
 ```
 
-We can now evaluate the spatial lag model both in terms of how it performs compared to OLS and the spatial error model. The statistical significance of $\rho$, as indicated by the extremely small $p$-value, is another sign that our error term in the basic OLS model was autoregressive. This is immediate evidence that the results of this model are more accurate than OLS. We can see that the coefficient estimate on the percent bachelor's degree variable is somewhat smaller than before. The standard errors are also different, indicating a different degree of uncertainty in our point estimate than the basic OLS or the spatial error model shows. Turning to our main model selection criteria, the AIC value is lower for the spatial lag model compared to OLS but higher than the AIC in the spatial error model. In sum, the spatial lag model performs better and is preferable to OLS, but the spatial error model is the best performing model overall. For any given research project, authors should present all three models and consider a more advanced spatial regression model to provide further robustness checks and ensure readers that results are consistent across varying model specifications.
+We can now evaluate the spatial lag model both in terms of how it performs compared to OLS and the spatial error model. The statistical significance of $\rho$, as indicated by the extremely small $p$-value, is another sign that our error term in the basic OLS model was autoregressive. We need to run `summary()` to see this.
 
-To that end, we present all three models in the same table for ease of analysis here:
+```{r summary tables 2}
+## Summary Table 2
+summary(spat_lag.2)
+```
+
+This is immediate evidence that the results of this model are more accurate than OLS. We can see that the coefficient estimate on the percent bachelor's degree variable is somewhat smaller than before. The standard errors are also different, indicating a different degree of uncertainty in our point estimate than the basic OLS or the spatial error model shows. Turning to our main model selection criteria, the AIC value is lower for the spatial lag model compared to OLS but higher than the AIC in the spatial error model. In sum, the spatial lag model performs better and is preferable to OLS, but the spatial error model is the best performing model overall. For any given research project, authors should present all three models and consider a more advanced spatial regression model to provide further robustness checks and ensure readers that results are consistent across varying model specifications.
+
+To that end, we present all three models in the same table for ease of analysis:
 
 ```{r 3 models table, echo=FALSE, results='asis', warning=FALSE, message=FALSE, echo=FALSE}
 stargazer(ols.1, ols.2, spat_err.1, spat_err.2, spat_lag.1, spat_lag.2, type = "html", 
@@ -264,7 +285,7 @@ stargazer(ols.1, ols.2, spat_err.1, spat_err.2, spat_lag.1, spat_lag.2, type = "
 
 ## Geographically Weighted Regression
 
-Following our discussion of the two main workhorse models of spatial regression, the spatial error and the spatial lag models, we talked about several more advanced techniques to estimate spatial relationships that contain a high degree of spatial autocorrelation or have heterogeneity (LISA) in their spatial autocorrelation. We now end our applied section with showing how to implement one of the most common and poweful of the more advanced models: the GWR model. We start by estimating a geographically weighted regression model, compare its performance to the above models, and visualize the results. `library(GWmodel)` in tandem with `library(spdep)` provides the tools needed to estimate a geographically weighted regression model. We first need to remove all NAs from the dataset to accurately calculate the weights. 
+Following our discussion of the two main workhorse models of spatial regression, the spatial error and the spatial lag models, we talked about several more advanced techniques to estimate spatial relationships that contain a high degree of spatial autocorrelation or have heterogeneity (LISA) in their spatial autocorrelation. We now end our applied section with showing how to implement one of the most common and powerful of the more advanced models: the GWR model. We start by estimating a geographically weighted regression model, compare its performance to the above models, and visualize the results. `library(GWmodel)` in tandem with `library(spdep)` provides the tools needed to estimate a geographically weighted regression model. We first need to remove all NAs from the dataset to accurately calculate the weights. 
 
 ```{r}
 # Remove all the NAs in the dataset
@@ -276,22 +297,17 @@ Now that we have removed the NAs, we can calculate the weights for each unit. Re
 
 ```{r gwr weights}
 # Estimate an optimal bandwidth
-weights <- GWmodel::bw.gwr(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +
-                           log(1 + africaninl) + 
-                           log(1 + asianinlab) + log(1 + hispanicin),
-                           data = brook_shape_no_na %>% 
-                           sf::as_Spatial(), 
-                           approach = 'AICc', kernel = 'bisquare', 
+weights <- GWmodel::bw.gwr(poverty_rate~bach_rate + lab_force_rate +  per_aa + 
+                           per_asian + per_his, data = brook_shape_no_na %>% 
+                           sf::as_Spatial(), approach = 'AICc', kernel = 'bisquare', 
                            adaptive = TRUE)
 ```
 
 Now that we have the weights calculated, we can run the main GWR model. The code to run the model and display the results is below. Unfortunately, we cannot use `library(stargazer)` to create a nicely formatted table for GWR models due to the nature and complexity of the output.
 
 ```{r gwr model, warning=FALSE, message=FALSE}
-gwr_model <- GWmodel::gwr.basic(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  
-                                log(1 + africaninl) + 
-                                log(1 + asianinlab) + log(1 + hispanicin),
-                                data = brook_shape_no_na %>% 
+gwr_model <- GWmodel::gwr.basic(poverty_rate~bach_rate + lab_force_rate +  per_aa + 
+                                per_asian + per_his, data = brook_shape_no_na %>% 
                                 sf::as_Spatial(), 
                                 bw = weights, kernel = "bisquare", adaptive = TRUE)
 print(gwr_model)
@@ -310,12 +326,12 @@ GWR models offer a key benefit in unit level metrics that allow us to evaluate a
 ## Processing GWR model for visualization
 gwr_proc_data <- gwr_model$SDF@data
 ## Changing Bachelor's Degree Variable Name
-gwr_proc_data$coefbach <- gwr_proc_data$`log(1 + bach_rate)`
+gwr_proc_data$coefbach <- gwr_proc_data$`bach_rate`
 ## Calculating p-values
-gwr_proc_data$bachp <- 2*pt(-abs(gwr_proc_data$`log(1 + bach_rate)_TV`), 
+gwr_proc_data$bachp <- 2*pt(-abs(gwr_proc_data$`bach_rate_TV`), 
                             df = dim(gwr_proc_data)[1] -1)
 ## Creating a standard error variable
-gwr_proc_data$sebach <- gwr_proc_data$`log(1 + bach_rate)_SE`
+gwr_proc_data$sebach <- gwr_proc_data$`bach_rate_SE`
 ## Finalizing the preprocessing
 processed_gwr_results <- gwr_model$SDF
 processed_gwr_results@data <- gwr_proc_data
@@ -333,7 +349,7 @@ Mapping the pseudo $R^2$ values for each census tract shows the heterogeneity in
 spplot(processed_gwr_results, "coefbach", main="Bachelor's Degree Estimated Coefficients")
 ```
 
-The map of estimated coefficients above shows where the effect of college education rates on poverty rates, controlling for all other factors in the model, is the highest and lowest. While our overall coefficient estimate is negative, we can see a cluster in central Brooklyn where the estimated coefficient is positive. This tells us that bachelor's degree attainment does not always lead to lower levels of poverty and its effect is heterogeneous across spatial units. We can also further see clustering of high and low coefficients in different locations around the borough.
+The map of estimated coefficients above shows where the effect of college education rates on poverty rates, controlling for all other factors in the model, is the highest and lowest. While our overall coefficient estimate is negative, we can see a cluster in southern Brooklyn where the estimated coefficient is positive. This tells us that bachelor's degree attainment does not always lead to lower levels of poverty and its effect is heterogeneous across spatial units. We can also further see clustering of high and low coefficients in different locations around the borough.
 
 ```{r plotting gwr results se}
 spplot(processed_gwr_results, "sebach", main="Standard Error of Bachelor's Degree Coefficients")
@@ -345,7 +361,7 @@ This third map shows the distribution of standard errors across census tracts. W
 spplot(processed_gwr_results, "bachp", main="p-value of Bachelor's Degree Coefficients")
 ```
 
-Finally, we map the distribution of $p$-values. We can see extremely low $p$-values, indicating statistical significance, across the majority of the borough with only a small cluster of census tracts where the rate of college education was not a statistically significant predictor of poverty rates. 
+Finally, we map the distribution of $p$-values. We can see extremely low $p$-values, indicating statistical significance, across the majority of the borough with only a small cluster of census tracts where the rate of college education was not a statistically significant predictor of poverty rates. In some census tracts, the $p$-value is near 1!
 
 It is an extremely good idea to create these visualizations whenever we run a GWR model so that we can better characterize the full distribution of our model results. Since GWR runs many models, only looking at averaged metrics loses the richness that makes GWR models valuable to researchers.
 

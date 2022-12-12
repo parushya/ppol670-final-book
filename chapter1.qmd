@@ -59,14 +59,18 @@ dim(ny_shape)
 
 We now have our dataset read into *R*. We can use `dim()` or look in the top right pane to see that our dataset has 2166 observations of 114 variables covering demographic and economic information at the census tract level for all of New York's five boroughs. This is obviously quite a lot of variables and numerous questions of interest for social scientists and policy researchers can be answered with this dataset. For tractability, we will limit our analysis to a couple of variables in only one of New York's boroughs; we will visualize poverty in Brooklyn, New York City's most populous borough. 
 
-Before starting any analysis, researchers will probably need to go through the sometimes lengthy and difficult process of data cleaning and wrangling. During the data cleaning and wrangling stage, researchers can remove NA values they do not want; create new variables that better capture the intended research design; and format data in the most convenient manner for the analysis at hand. For this example, much of the cleaning of the raw ACS data has been done by the Department of Geography and Environmental Science at Hunter College in New York, New York. They have also included the weighted variables which account for the survey's complex sampling procedure. The only wrangling necessary is to turn the poverty variable, currently measured as the total number of people living below the poverty line in a census tract, into a poverty rate variable that captures the proportion of a census tract's residents living below the poverty line. The code below creates this variable and uses `geom_sf()` to create a map of poverty rates by the census tract in Brooklyn. We also filter to exclude relatively underpopulated census tracts. Since we plan to utilize the proportion of a census tract's residents with a bachelor degree to predict the census tract's poverty rate, we also create a proportion of residents with a bachelor's degree variable.
+Before starting any analysis, researchers will probably need to go through the sometimes lengthy and difficult process of data cleaning and wrangling. During the data cleaning and wrangling stage, researchers can remove NA values they do not want; create new variables that better capture the intended research design; and format data in the most convenient manner for the analysis at hand. For this example, much of the cleaning of the raw ACS data has been done by the Department of Geography and Environmental Science at Hunter College in New York, New York. They have also included the weighted variables which account for the survey's complex sampling procedure. The only wrangling necessary is to turn the poverty variable, currently measured as the total number of people living below the poverty line in a census tract, into a poverty rate variable that captures the proportion of a census tract's residents living below the poverty line. The code below creates this variable and uses `geom_sf()` to create a map of poverty rates by the census tract in Brooklyn. We also filter to exclude relatively underpopulated census tracts. Since we plan to utilize the proportion of a census tract's residents with a bachelor degree to predict the census tract's poverty rate, we also create a proportion of residents with a bachelor's degree variable and transform the control variables we will use later into percentages.
 
 ```{r motivating map 1, warning=FALSE,message=FALSE}
 ## Poverty Map
 brook_shape <- ny_shape %>%
   filter(boroname == "Brooklyn", poptot>200) %>%
   mutate(poverty_rate=(poor/poptot),
-         bach_rate = (onlybachel/poptot))
+         bach_rate = (onlybachel/poptot),
+         per_asian = (asian/poptot),
+         per_aa = (african/poptot),
+         per_his = (hispanic/poptot),
+         lab_force_rate =(popinlabou/popover18))
 
 m1 <- brook_shape %>%
   ggplot(aes(fill=poverty_rate)) +
