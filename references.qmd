@@ -8,11 +8,15 @@
 
 - Bivand R, Pebesma EJ, Gómez-Rubio V. 2008. Applied spatial data analysis using R. Heidelberg: Springer.
 
+- Darmofal, David. 2006. Spatial Econometrics and Political Science. https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=8c16dd4a68aa1725518b4d6a9d02321fbc91ce4c
+
 - Darmofal, David. 2015. Spatial Analysis for the Social Sciences. Cambridge University Press.
 
 - Eilers, Lea. 2019. Spatial Autocorrelation and the Spatial Durbin Model. Robust Workshop Lecture Slides. https://rural-urban.eu/sites/default/files/05_Spatial%20Autocorrelation%20and%20the%20Spatial%20Durbin%20Model_Eilers.pdf
 
 - Fotheringham AS, Brundson C, and Charlton M. 2002. Geographically weighted regression: The analysis of spatially varying relationships. West Sussex, England: John Wiley and Sons, Ltd.
+
+- Franzese, R., & Hays, J. 2017. Spatial Econometric Models of Cross-Sectional Interdependence in Political Science Panel and Time-Series-Cross-Section Data. Political Analysis, 15(2), 140-164.
 
 - Goovaerts P. 2008. Geostatitical Analysis of Health Data: State-of-the-Art and Perspectives. Soares A, Pereira MJ, & Dimitrakopolous R (Eds.) Proceedings of the Sixth European Conferences on Geostatistics for Environmental Applications (pp. 3-22).
 
@@ -26,6 +30,10 @@
 
 - Moran, P. A. P. (1950). "Notes on Continuous Stochastic Phenomena". Biometrika. 37 (1): 17–23.
 
+- Mourao, Paulo Reis, Mihaela Bronic, and Branko Stanic. 2020. Discussing the determinants of online budget transparency based on a spatial regression analysis of Croatian cities and municipalities: Do good neighbors make you better?. International Area Studies Review. 1-20.[Link](https://www.researchgate.net/profile/Mihaela-Bronic/publication/338487066_Discussing_the_determinants_of_online_budget_transparency_based_on_a_spatial_regression_analysis_of_Croatian_cities_and_municipalities_Do_good_neighbours_make_you_better/links/5e186cd1a6fdcc283766702c/Discussing-the-determinants-of-online-budget-transparency-based-on-a-spatial-regression-analysis-of-Croatian-cities-and-municipalities-Do-good-neighbours-make-you-better.pdf)
+
+- Lin, Tse-Min, Chin-En Wu, and Feng-Yu Lee. 2006. “Neighborhood” Influence on the Formation of National Identity in Taiwan: Spatial Regression with Disjoint Neighborhoods. Political Research Quarterly, 59(1), 35–46.
+
 - Liu Y, Jiang S, Liu Y, Wang R, Li X, Yuan Z, Wang L, and Xue F. (2011) Spatial epidemiology and spatial ecology study of worldwide drug-resistant tuberculosis. International Journal of Health Geographics 10:50.
 
 - Tobler W., 1970 A computer movie simulating urban growth in the Detroit region. Economic Geography, 46(Supplement): 234–240.
@@ -37,6 +45,10 @@
 - Yoo D. 2012. Height and death in the Antebellum United States: a view through the lens of geographically weighted regression. Economics and Human Biology 10(1):43-53.
 
 - Zhu, L., Gorman, D.M. & Horel, S. 2006. Hierarchical Bayesian spatial models for alcohol availability, drug "hot spots" and violent crime. Int J Health Geogr 5, 54.
+
+## Appendix
+
+In this section, readers can find additional guides that informed this project and a brief overview of the political science and economics literature that is using spatial regression methods.
 
 **For more resources that guided this project:**
 
@@ -58,3 +70,7 @@
   
 - Spatial Weighting
   - https://rpubs.com/erikaaldisa/spatialweights
+
+**An Overview of How Spatial Modeling is Applied in Political Science**
+
+Advancements in spatial modeling have improved measurements for research questions whose theoretical arguments are dependent upon accounting for space and time. In political science and spatial econometrics, models have progressed our understanding of topics such as political geography, political identity, and political opinions. Modeling relationships without accounting for space has led to inaccurate predictions and other estimation errors (Darmofal, 2006). Experts in the field have advocated for moving away from non-spatial OLS regressions to models that account for the ways in which space can impact bias, accuracy in standard errors, and efficiency of estimation (Franzese and Hays, 2017). Lin et al. (2006) used spatial modeling techniques to determine how Taiwanese national identity was shaped through neighborhood influence. Mourao et al. (2020) incorporated spatial models into their analysis to better understand how providing citizens with local budgetary transparency can facilitate legislative transparency and better accountability. These relevant examples highlight the importance of correct model specification and its applications, but spatial methods are not yet popular in political science. One goal of this project, is to increase the usage of spatial regression by political scientists.

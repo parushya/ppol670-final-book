@@ -348,4 +348,4 @@ It is an extremely good idea to create these visualizations whenever we run a GW
 
 ## Concluding Remarks
 
-We have presented an applied example that shows how to detect and manage spatial autocorrelation. The analysis presented here is not the only way that spatial data can be analyzed, and we only considered one of the more advanced spatial regression models at our disposal. It is up to researchers to make wise decisions about model specification and to be careful in how to control for differing types of spatial autocorrelation. In the final section of this treatment of spatial regression, we consider the contributions to many different fields that spatial regression methods have been vital for.
+We have presented an applied example that shows how to detect and manage spatial autocorrelation. The analysis presented here is not the only way that spatial data can be analyzed, and we only considered one of the more advanced spatial regression models at our disposal. It is up to researchers to make wise decisions about model specification and to be careful in how to control for differing types of spatial autocorrelation.
