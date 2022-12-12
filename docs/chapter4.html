@@ -707,7 +707,7 @@ F Statistic
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nb2listw</span>(<span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now with the weights created, we can estimate a spatial error model with <code>errorsarlm()</code>. We estimate both a simple and multiple regression model with the same control variables that are included above in the OLS model. There are some additional arguments beyond what is required for an OLS models to properly use <code>errorsarlm()</code>. The weights must be included, which we named brook_nb, we need to specify <code>zero.policy=TRUE</code> which allows weights to equal zero, and omit NAs. The spatial error model is:</p>
-<p><span class="math display">\[poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}\\ \nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i\]</span> The following code estimates the model:</p>
+<p><span class="math display">\[poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}\]</span> <span class="math display">\[\nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i\]</span> The following code estimates the model:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Spatial Regression Models</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>spat_err<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate), <span class="at">data=</span>brook_shape,</span>
@@ -2016,7 +2016,7 @@ Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 </co
 <pre><code>   ***********************************************************************
    *                       Package   GWmodel                             *
    ***********************************************************************
-   Program starts at: 2022-12-12 15:48:29 
+   Program starts at: 2022-12-12 15:58:33 
    Call:
    GWmodel::gwr.basic(formula = poverty_rate ~ log(1 + bach_rate) + 
     log(1 + popinlabou) + log(1 + africaninl) + log(1 + asianinlab) + 
@@ -2088,7 +2088,7 @@ Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 </co
    Adjusted R-square value:  0.6639291 
 
    ***********************************************************************
-   Program stops at: 2022-12-12 15:48:29 </code></pre>
+   Program stops at: 2022-12-12 15:58:34 </code></pre>
 </div>
 </div>
 <p>The output, shown above, gives a wealth of information about regression results, goodness-of-fit metrics, and meta information about the estimation procedure. Let’s go over some of it now. We see first the results of the global regression and below, in the second section, we see the results of the GWR. Importantly, the GWR output gives us a range of coefficient estimates since we have conducted an individual regression model for each census tract. The results that we see in the second table are actually more like descriptive statistics of the distribution of estimated coefficients and other regression result metrics. We can also see the more meta information of our GWR models such as the adaptive bandwidth, the kernel function, and the distance metric. We have left all of these values default as suggested by Fotheringham et al.&nbsp;(2002) &amp; Goovaerts (2008).</p>
