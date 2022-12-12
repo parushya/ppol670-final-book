@@ -1,18 +1,22 @@
-# Preface {.unnumbered}
+```{r, echo=FALSE}
+knitr::include_graphics("1325192.webp") 
+```
 
 “Everything is related to everything else, but near things are more related than distant things."
-- Waldo Tobler
 
-The central principles of this project are highlighting the contrasts between spatial regression models and linear regression models; strategies to handle spatial autocorrelation; and applications
-of spatial regression. Specifically, this short treatment on spatial analysis will show you how to create visualizations of spatial data, estimate spatial relationships, and make predictions and inferences based on the results of spatial models. Further, we will discuss how to avoid incorrect standard errors due to spatial autocorrelation and increase confidence in statistical inference.
+- Waldo Tobler (1970)
 
-In the first chapter, we summarize the basic concepts and methodology of geospatial analysis, map a variable of interest, and introduce the basic concept of spatial autocorrelation. In the second chapter, we introduce spatial modeling, show how it violates the Gauss-Markov assumptions of ordinary least squares, discuss spatial autocorrelation, and show a simulation of spatial autocorrelation. Also in chapter two, we discuss formal statistical tests, and how to conduct them in *R*, for autocorrelation. We cover both global autocorrelation with Moran I statistic and local autocorrelation with Local Moran’s I or Local Indicators of Spatial Association (LISA). In chapter three, we discuss the two dominate methods used to purge autocorrelation from statistical models: the spatial lag model and the spatial error model. We also cover some more advanced spatial modeling techniques. In chapter four, we return to our applied example and work through a full spatial analysis of the relationship between education and poverty rate in Brooklyn, New York. We also show how to implement one of the more advanced models presented in chapter three. In the final chapter, we focus on the big picture takeaways of spatial regression, showcase numerous studies that utilize spatial regression methods, and discuss how spatial regression can be used in social science research and policy analysis settings.
+# Preface {.unnumbered}
+
+The central principles of this project highlight the contrasts between spatial regression models and OLS models; showcase the strategies to detect and handle spatial autocorrelation; and discuss applications of spatial regression. Specifically, this short treatment on spatial regression will show you how to create visualizations of spatial data, estimate spatial relationships, and make predictions and inferences based on the results of your spatial models. Further, we will discuss how to avoid incorrect standard errors due to spatial autocorrelation and increase confidence in statistical inference.
+
+In the first chapter, we summarize the basic concepts and methodology of geospatial analysis, map a variable of interest, and introduce the basic concept of spatial autocorrelation. In the second chapter, we introduce spatial modeling, show how it violates the Gauss-Markov assumptions of ordinary least squares, and discuss spatial autocorrelation in more detail. Also in chapter two, we discuss formal statistical tests, and how to conduct them in *R*, for autocorrelation. We cover both global autocorrelation with Moran's $I$ statistic and local autocorrelation with Local Moran’s $I$ or Local Indicators of Spatial Association (LISA). In chapter three, we discuss the two dominant methods used to purge autocorrelation from statistical models: the spatial lag model and the spatial error model. We also cover some more advanced spatial modeling techniques. In chapter four, we return to our applied example and work through a full spatial analysis of the relationship between education and poverty rate in Brooklyn, New York. We also show how to implement one of the more advanced models presented in chapter three. In the final chapter, we showcase numerous studies that utilize spatial regression methods and discuss how spatial regression can be used in social science research and policy analysis settings.
 
 ## Prerequisites
 
-We assume that readers have a basic proficiency in *R*, data analysis, and introductory probability theory/statistics. While each each topic is presented in an applied manner, and the overall mathematical complexity is low, a basic background in statistics is necessary to understand the fundamental concepts discussed throughout this guide. At the most basic level, a working knowledge of the Gauss-Markov assumptions, statistical inference, and programming with `library(tidyverse)` is needed. Further, some basic experience working with spatial data and making maps would be extremely helpful.
+We assume that readers have a basic proficiency in *R*, data analysis, and introductory probability theory/statistics. While each topic is presented in an applied manner, and the overall mathematical complexity is low, a basic background in statistics is necessary to understand the fundamental concepts discussed throughout this guide. At the most basic level, a working knowledge of the Gauss-Markov assumptions, statistical inference, and programming with `library(tidyverse)` is needed. Further, some basic experience working with spatial data, `library(sf)`, and making maps would be extremely helpful.
 
-Before following along with the applied example, install and load the packages below:
+Before following along with the applied example, be sure to install and load the packages below:
 
 ```{r packages, warning=FALSE,message=FALSE}
 ## The Following Packages Are Used for the Analysis
@@ -27,3 +31,5 @@ library(patchwork)
 library(GWmodel)
 library(magrittr)
 ```
+
+[image source](https://wallpaperaccess.com/data-science)

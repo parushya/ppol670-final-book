@@ -4,6 +4,8 @@
 
 - Anselin, Luc. 2020. Local Spatial Autocorrelation. GeoDa. https://geodacenter.github.io/workbook/6a_local_auto/lab6a.html#fn1
 
+- Bailey, Michael A. 2021. Real Statistics. 2nd edition. Oxford University Press.
+
 - Bivand R, Pebesma EJ, Gómez-Rubio V. 2008. Applied spatial data analysis using R. Heidelberg: Springer.
 
 - Darmofal, David. 2015. Spatial Analysis for the Social Sciences. Cambridge University Press.

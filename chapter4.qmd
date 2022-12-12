@@ -1,6 +1,4 @@
-# Applied Example {.unnumbered}
-
-## Poverty & Education in Brooklyn, New York
+# Poverty & Education in Brooklyn, New York {.unnumbered}
 
 ```{r packages, warning=FALSE,message=FALSE, echo=FALSE}
 library(tidyverse)
@@ -16,38 +14,28 @@ library(bookdown)
 library(magrittr)
 ```
 
-```{r, include=FALSE}
+```{r, include=FALSE, echo=FALSE}
 library(patchwork)
-source("chpater-4-dependency.R", local = knitr::knit_global())
+source("chapter-4-dependency.R", local = knitr::knit_global())
 # or sys.source("your-script.R", envir = knitr::knit_global())
 ```
 
-Up until now, we have not worked with applied data. We have only presented theory, equations, and *R* commands much like a "cookbook." This chapter presents a self-contained systematic step-by-step analysis of the influence of education on poverty in order to showcase each step of the spatial analysis process. We return to our maps from the first chapter to predict the type of spatial autocorrelation we should expect; use Moran's $I$ and LISA methods to detect global and local spatial autocorrelation; run several different spatial models and use goodness-of-fit metrics to select the "best" approach; visualize the model results alongside OLS results; and include a series of additional maps that better illustrate each concept mentioned throughout this work. By the end of this chapter, readers will be completely comfortable implementing spatial regression models, interpreting their output, and visualizing their results and be capable of undertaking a complete spatial analysis.
+Up until now, we have not worked with applied data. We have only presented theory, equations, and *R* commands much like a "cookbook." This chapter presents a self-contained systematic step-by-step analysis of the influence of college education rates on poverty in order to showcase each step of the spatial analysis process. We return to our maps from the first chapter to predict the type of spatial autocorrelation we should expect; use Moran's $I$ and LISA methods to detect global and local spatial autocorrelation; run several different spatial models and use goodness-of-fit metrics to select the "best" approach; display the model results alongside OLS results; and include a series of additional maps that better illustrate each concept mentioned throughout this short book. By the end of this chapter, readers will be completely comfortable implementing spatial regression models, interpreting their output, visualizing their results, and undertaking a complete spatial analysis.
 
 ## Exploratory Spatial Data Analysis
 
-Recall that we are motivated by the question of whether or not a college education can lift people out of poverty and we started our analysis by mapping our variables of interest.
+Recall that we are motivated by the question of whether or not a college education can lift people out of poverty. We started our analysis by mapping our variables of interest. These maps can be found below.
 
 ```{r redisplaying maps}
 ## Redisplaying the Maps
 m1 + m2
 ```
 
-To recap what we covered in the introduction, these maps depict the distribution of poverty and college educated residents across Brooklyn and provides insights into the areas of Brooklyn that are higher educated and the areas that are struggling economically. We can see that the high values of poverty rates and the high rates of bachelor degree holders are clustered in different parts of the city. The maps appear to be almost flipped images of one another with the high poverty areas being the low educational attainment areas, and vice versa. While this is certainly contextual evidence that there exists a relationship between education and poverty, as social scientists, we are usually interested in concrete evidence, either of a causal effect or for making predictions. To conduct a more rigorous analysis of the relationship between poverty and education, we should implement some form of regression model. We can think of a basic OLS model such as is presented below:
+To recap what we covered in the introduction, these maps depict the distribution of poverty and college educated residents across Brooklyn. The maps provide insights into the areas of Brooklyn that are higher educated and the areas that are struggling economically. We can see that the high values of poverty rates and the high rates of bachelor degree holders are clustered in different parts of the city. The maps appear to be almost flipped images of one another with the high poverty areas being the low educational attainment areas, and vice versa. This clsutering is conjectural evidence in support of positive autocorrelation. While there is certainly contextual evidence that there exists a relationship between education and poverty, as social scientists, we are interested in concrete evidence. To conduct a more rigorous analysis of the relationship between poverty and college education, we should implement some form of regression model, but first we should run tests for spatial  autocorrelation.
 
-## Applied Example of Detecting Spatial Autocorrelation
+## Applied Detection of Spatial Autocorrelation
 
-$$poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}$$
-
-Where:
-- $poverty_i$ is the poverty rate of census tract $i$ in Brooklyn, New York.
-- $\alpha$ is the intercept
-- $\beta$ is our main coefficient of interest
-- $bachelor_i$ is the percent of census tract $i$'s population with a bachelor's degree
-- $\delta \Lambda'$ is a matrix of covariates and a vector of their coefficients
-- $\nu_i$ is the error term which we can test for spatial autocorrelation
-
-Whenever we are working with spatial data, we should run some tests for spatial autocorrelation to make sure that our errors are uncorrelated, so that we can be more confident in our standard errors. We can implement a test for global spatial autocorrelation with Moran's $I$. The code is given below:
+Whenever we are working with spatial data, we should run some tests for spatial autocorrelation to make sure that our errors are uncorrelated, so that we can be more confident that we are not violating the Gauss-Markov assumptions. We can implement a test for global spatial autocorrelation with Moran's $I$. The code is given below:
 
 ```{r example morans I test}
 ## Moran' I test
@@ -69,9 +57,9 @@ brook_shape %>%
   moran.test(brook_shape$bach_rate, ., zero.policy = TRUE)
 ```
 
-Moran's $I$ is even larger and more positive for the percent bachelor's degree variable, and the $p$-value is again extremely small, approaching 0. We can interpret this $p$-value as the probability that we would have gotten an estimate of spatial autocorrelation this severe if there was, in fact, no spatial autocorrelation. 
+Moran's $I$ is even larger and more positive for the percent bachelor's degree variable and the $p$-value is again extremely small, approaching 0. We can interpret this $p$-value as the probability that we would have gotten an estimate of spatial autocorrelation this severe if there was, in fact, no spatial autocorrelation. 
 
-Both visually from a close examination of the mapping of poverty and the percent of residents with a bachelor's degree and from a formal statistical test for spatial autocorrelation, we can see evidence that our variables of interest exhibit spatial autocorrelation.
+Both visually from a close examination of the maps of poverty and college educated residents and formally from a statistical test for spatial autocorrelation, we can see evidence that our variables of interest exhibit spatial autocorrelation.
 
 Another tool that we can use to illustrate spatial autocorrelation is the following scatterplot:
 
@@ -85,9 +73,9 @@ brook_shape %>%
                   ylab = "Lagged Neighbors' Poverty Rate")
 ```
 
-The scatterplot above uses a unit, $i$'s poverty rate to predict $i$'s neighbor's poverty rate. If the poverty rate of $i$ is a statistically significant predictor of the poverty rate of $i$'s neighbors, then we have evidence of spatial autocorrelation that should be accounted for in our regression models using these variables.
+The scatterplot above uses unit, $i$'s poverty rate to predict $i$'s neighbor's poverty rate. If the poverty rate of $i$ is a statistically significant predictor of the poverty rate of $i$'s neighbors, then we have evidence of spatial autocorrelation. We can see a strong positive relationship in the scatterplot above which is consistent with the results of global Moran's $I$ test above.
 
-Now that we have evidence for global autocorrelation, we should also test for local autocorrelation. Our first piece of evidence that our data may exhibit local autocorrelation is the number of observations in the scatterplot above that are clustered in the upper right quadrant. That quadrant indicates a high-high spatial autocorrelation relationship, meaning census tracts with high levels of poverty are clustered nearby with other census tracts with high levels of poverty. To test for LISA more formally and rigorously, we use `localmoran()`. First, we calculate the weights for each census tract with the code below. We will also use this code to calculate weights needed for spatial regression models and is the same commands we used above for global Moran's $I$.
+Now that we have evidence for global autocorrelation, we should also test for local autocorrelation. Our first piece of evidence that our data may exhibit local autocorrelation is the number of observations in the scatterplot above that are clustered. The top-right quadrant indicates a High-High spatial autocorrelation relationship, meaning census tracts with high levels of poverty are clustered nearby with other census tracts with high levels of poverty. We can see that there are other clusters, though smaller in number, present in the other quadrants as well. This indicates some degree of heterogeneity in our spatial autocorrelation. To test for LISA more formally and rigorously, we use `localmoran()`. First, we calculate the weights for each census tract with the code below. We will also use this code to calculate thenweights needed for spatial regression models and this code contains the same commands we used above for pre-processing our data for global Moran's $I$.
 
 ```{r weights-for-calculating lisa}
 ## Creating Weights for Spatial Autocorrelation
@@ -98,14 +86,14 @@ brook_nb <- brook_shape %>%
 
 With the weights calculated, we can estimate local Moran's $I$ for each census tract in our data with `spdep::localmoran()`. We also allow weights of neighbors to be 0 by setting `zero.policy=TRUE` and omit NAs. 
 
-```{r calculating-lisa}
+```{r calculating-lisa, warning=FALSE, message=FALSE}
 ## Local Moran's I
 lisa <- spdep::localmoran(brook_shape$poverty_rate, brook_nb, 
                           zero.policy = TRUE, na.action = na.omit)
 
 ```
 
-When we run `localmoran()`, R returns a new dataframe with the same number of rows as the input dataframe, but with five new variables that can be used to detect and characterize the local spatial autocorrelation in our data. The variables and their definitions are explained in the table below adapted from this [guide](http://www.geo.hunter.cuny.edu/~ssun/R-Spatial/).
+When we run `localmoran()`, R returns a new dataframe with the same number of rows as the input dataframe, but with five new variables that can be used to detect and characterize the local spatial autocorrelation in our data. The variables and their definitions are explained in the table below that we adapted from this [guide](http://www.geo.hunter.cuny.edu/~ssun/R-Spatial/).
 
 
 |Variable |	   Definition                                   |
@@ -117,7 +105,7 @@ When we run `localmoran()`, R returns a new dataframe with the same number of ro
 |Pr(z > 0)| $p$-value of local Moran statistic
 
 
-The goal when analyzing local Moran's $I$ values is to catalog census tracts depending on if they are a part of a cluster or if they not have significant local autocorrelation. When $I_i$, which is Moran's $I$ for census tract $i$, is high it means that there is a cluster around the unit has similar values either low or high. A low $I_i$ means that there is no cluster and that a unit is surrounded by values that are not similar. In other words, we can classify each unit as either being a part of a cluster or an outlier depending on the value of $I_i$. We can further classify each census tract into High-High, High-Low, Low-Low, and Low-High as mentioned in the Detecting Spatial Autocorrelation Chapter.
+The goal when analyzing local Moran's $I$ values is to catalog census tracts depending on if they are a part of a cluster or if they do not have significant local autocorrelation. When $I_i$, which is Moran's $I$ for census tract $i$, is high it means that there is a cluster around the unit that has similar values either low or high. A low $I_i$ means that there is no cluster and a unit is surrounded by values that are not similar. In other words, we can classify each unit as either being a part of a cluster or an outlier depending on the value of $I_i$. We can further classify each census tract into High-High, High-Low, Low-Low, and Low-High as mentioned previously.
 
 Before we can run a formal statistical test for local autocorrelation, we first have to choose a confidence level. While we select the $.05$ level because it is customary, this choice is obviously subjective. The following code defines a confidence level and then takes the mean of the poverty rate.
 
@@ -160,13 +148,25 @@ lisa.1 <- ggplot(brook_shape) +
 lisa.1
 ```
 
-Each classification is visually represented in the plot above. White census tracts have no significant spatial autocorrelation, light blue tracts are Low-High, blue tracts are Low-Low, pink tracts are High-Low, and red tracts are High-High. Many of the clusters of high poverty census tracts are the same tracts that we saw from our basic maps, but now we have a more rigorous way to detect and visualize clustering and we knoe the type of clustering.
+Each classification is visually represented in the plot above. White census tracts have no significant spatial autocorrelation, light blue tracts are Low-High, blue tracts are Low-Low, pink tracts are High-Low, and red tracts are High-High. Many of the clusters of high poverty census tracts are the same tracts that we pointed out when looking at our basic maps, but we now have a more rigorous way to detect and visualize clustering and we know the exact type of clustering.
 
-We have shown several different ways to detect spatial autocorrelation: visually by simply looking at a map of a variable, with global Moran's $I$, and with local Moran $I$'s when we suspect there may be heterogeneity in the spatial autocorrelation. Now that we know our data exhibits spatial autocorrelation, we turn to methods to model spatial relationships and purge the autocorrelation from the error term of our models that will surely also contain spatial autocorrelation.
+S far, we have shown several different methods to detect spatial autocorrelation: visually by simply looking at a map of a variable, with global Moran's $I$, and with local Moran $I$'s when we suspect there may be heterogeneity in spatial autocorrelation. Now that we know our data exhibits spatial autocorrelation, we turn to methods to model spatial relationships and purge the autocorrelation from the error term of our models that will surely also contain spatial autocorrelation.
 
 ## OLS Results
 
-Knowing that our data is spatially autocorrelated, we want to use the techniques discussed in previous chapters to purge our error term of spatial autocorrelation. For illustrative purposes, however, we will first estimate a simple and multiple regression model. We log our independent variables to both linearize the relationship and to ensure our errors will be as symmetrically distributed as possible. We include covariates for the proportion of a census tracts' population that is a part of different identity groups and a variable that indicates the population in the labor force. Our analysis here is quite basic and only intended for illustrative purposes. The code below runs two models with `lm()` and saves the results as `ols.` and `ols.2`. 
+We can think of a basic OLS model such as is presented below to start.
+
+$$poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}$$
+
+Where:
+- $poverty_i$ is the poverty rate of census tract $i$ in Brooklyn, New York.
+- $\alpha$ is the intercept
+- $\beta$ is our main coefficient of interest
+- $bachelor_i$ is the percent of census tract $i$'s population with a bachelor's degree
+- $\delta \Lambda'$ is a matrix of covariates and a vector of their coefficients
+- $\nu_i$ is the error term which we can test for spatial autocorrelation
+
+Knowing that our data is spatially autocorrelated, we want to use the techniques discussed in previous chapters to purge our error term of spatial autocorrelation. For illustrative purposes, however, we will first estimate the above OLS model. We take the additional step of logging our independent variables to both linearize their relationship with the $poverty\_rate_i$ and to ensure our errors will be as symmetrically distributed as possible. We include covariates for the proportion of a census tracts' population that is a part of minority identity groups such as African-American, Asian, and Hispanic and a variable that indicates labor force participation. Our analysis here is quite basic and only intended for illustrative purposes. The code below runs two models with `lm()` and saves the results as `ols.` and `ols.2`. 
 
 ```{r ols models}
 ## OLS Models
@@ -175,19 +175,21 @@ ols.2 <-lm(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + afri
              log(1 + asianinlab) + log(1 + hispanicin), data=brook_shape)
 ```
 
+We can then visualize the results with `library(stargazer)`.
+
 ```{r ols table, echo=FALSE, results='asis', warning=FALSE, echo=FALSE, message=FALSE}
 stargazer(ols.1, ols.2, type = "html", header=FALSE, dep.var.labels = c("Poverty Rate", "Poverty Rate"),
           covariate.labels = c("Bachelor's Degree", "Labor Force", "African-American Pop",
           "Asian Pop", "Hispanic Pop"), title = "OLS Results")
 ```
 
-Let's examine the results. Our null hypothesis is that higher rates of residents with bachelor degrees in a census tract will have not an effect on a census tract's poverty. In both the simple regression model and the multiple regression model, the bachelor's degree variable is statistically significant. Our $p$-value is extremely close to zero and the 95% confidence interval does not cross zero, providing evidence to reject the null hypothesis that there is no relationship between attainment of a bachelor's degree and rates of poverty for census tracts in Brooklyn. 
+Let's examine the results. Our null hypothesis is that higher rates of residents with bachelor degrees in a census tract will have no effect on a census tract's poverty rate. In both the simple regression model and the multiple regression model, the bachelor's degree variable is statistically significant. Our $p$-value is extremely close to zero and the 95% confidence interval does not cross zero, providing evidence to reject the null hypothesis that there is no relationship between rates of college education and rates of poverty for census tracts in Brooklyn. 
 
-These results indicate that the census tracts that have a high level of bachelor's degree attainment have lower levels of poverty, as evidenced by the negative coefficient on the bachelor's degree variable. We are modeling an inherently spatial relationship, however, so we should be concerned that spatial autocorrelation is causing our standard errors to be incorrect. Incorrect standard errors could lead us to commit a Type I error, or reject the null hypothesis when we should not. We also ran Moran's $I$ test and found evidence of statistically significant spatial autocorrelation. To account for this, we can run a spatial error or a spatial lag model. We estimate both and report the results below.
+These results indicate that the census tracts that have a high level of bachelor's degree attainment have lower levels of poverty, as evidenced by the negative coefficient on the bachelor's degree variable. We are modeling an inherently spatial relationship, however, so we should be concerned that spatial autocorrelation is causing our standard errors to be incorrect. Incorrect standard errors could lead us to commit a Type I error, or rejecting the null hypothesis when we should not. We also ran Moran's $I$ test and found evidence of statistically significant univariate spatial autocorrelation, so we should be concerned about violating the assumptions of OLS. To account for spatial autocorrelation, we can run a spatial error or a spatial lag model. We estimate both and report the results below.
 
-## Spatial Error Model Results
+## Spatial Error Results
 
-Before we can estimate a spatial error or a spatial regression model, we must calculate weights based on the degree of spatial autocorrelation our variables exhibit. The following code detects spatial autocorrelation and creates according weights to be used in the spatial error and spatial lag models. We have used this same code just above and we can no re-use it for estimating models.
+Before we can estimate a spatial error or any spatial regression model, we must calculate weights based on the degree of spatial autocorrelation our variables exhibit. The following code detects spatial autocorrelation and creates weights to be used in the spatial error and spatial lag models. We have used this same code just above and we can no re-use it for estimating our models.
 
 ```{r  setting up data for lag and err models}
 ## Creating Weights for Spatial Autocorrelation
@@ -196,7 +198,7 @@ brook_nb <- brook_shape %>%
   nb2listw(zero.policy = TRUE)
 ```
 
-Now with the weights created, we can estimate the two models with `errorsarlm()`. We estimate both a simple and multiple regression model with the same control variables that are included above in the OLS model. There are some additional arguments beyond what is required for an OLS models to properly use `errorsarlm()`. The weights must be included, which we named brook_nb, we need to specify `zero.policy=TRUE` which allows weights to equal zero, and omit NAs. The spatial error model is:
+Now with the weights created, we can estimate the a spatial error model with `errorsarlm()`. We estimate both a simple and multiple regression model with the same control variables that are included above in the OLS model. There are some additional arguments beyond what is required for an OLS models to properly use `errorsarlm()`. The weights must be included, which we named brook_nb, we need to specify `zero.policy=TRUE` which allows weights to equal zero, and omit NAs. The spatial error model is:
 
 $$poverty\_rate_{i}=\alpha + \beta\ bach\_rate_{i} + \delta X' + \nu_{i}\\ \nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i$$
 The following code estimates the model: 
@@ -206,8 +208,8 @@ The following code estimates the model:
 spat_err.1 <- errorsarlm(poverty_rate~log(1 + bach_rate), data=brook_shape,
                          listw = brook_nb, zero.policy = TRUE, na.action = na.omit)
 
-spat_err.2 <- errorsarlm(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + africaninl) + 
-                     log(1 + asianinlab) + log(1 + hispanicin), data=brook_shape,
+spat_err.2 <- errorsarlm(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + africaninl)+
+                         log(1 + asianinlab) + log(1 + hispanicin), data=brook_shape,
                          listw = brook_nb, zero.policy = TRUE, na.action = na.omit)
 ```
 
@@ -218,17 +220,17 @@ stargazer(spat_err.1, spat_err.2, type = "html", header = FALSE,
           "Asian Pop", "Hispanic Pop"), title = "Spatial Error Results")
 ```
 
-The statistically significant, $p <.01$, estimate of $lambda$ above indicates that the error term was spatially autoregressive. Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of `errorsarlm()` using the `summary()` function in base R provides information about how well the spatial error model performed. We can see that the AIC for the spatial error model is -1534.8 and the AIC for the OLS model is -1319, indicating that the spatial error model performed better than OLS. 
+The statistically significant, $p <.01$, estimate of $lambda$ above indicates that the error term was spatially autoregressive. Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of `errorsarlm()` using the `summary()` function in base R provides information about how well the spatial error model *and* the OLS performed. The AIC for the spatial error model is -1534.8 and the AIC for the OLS model is -1319, indicating that the spatial error model performed better than OLS. 
 
-In terms of substantive results, we can see that the percent Asian variable has lost statistical significance. Overall, however, the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor's degree variable, remains statistically significant at the $p<.01$ level and has a similar, yet not exactly the same coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainity in the OLS model.
+In terms of substantive results, we can see that the percent Asian variable has lost statistical significance. Overall, however, the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor's degree, remains statistically significant at the $p<.01$ level and has a similar, yet not exactly the same, coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainty in the OLS model.
 
 ## Spatial Lag Results
 
-We can replicate these results with the related spatial lag model. That model looks like:
+We can replicate our analysis with the spatial lag model. That model looks like:
 
 $$poverty\_rate_i=\rho_{lag}\ W_ipoverty\_rate_i + \beta\ _ibach\_rate + \delta X' + \epsilon_i$$
 
-Remembering above, we include a weighted lagged dependent variable as an independent variable multiplied by the degree of autocorrelation, $\rho_{lag}$. We can use nearly the same code as above, expect we substitute `lagsarlm()` for `errorsarlm()`
+Recall from the previous chapter that we include a weighted lagged dependent variable as an independent variable. We can use nearly the same code as for the spatial error model, expect we substitute `lagsarlm()` for `errorsarlm()`
 
 ```{r lag models}
 spat_lag.1 <- lagsarlm(poverty_rate~log(1 + bach_rate), data=brook_shape,
@@ -246,9 +248,9 @@ stargazer(spat_lag.1, spat_lag.2, type = "html",
           "Asian Pop", "Hispanic Pop"), title = "Spatial Lag Results")
 ```
 
-We can evaluate the spatial lag model both in terms of how it performs compared to OLS and the spatial error model. The statistical significance of $\rho$, as indicated by the extremely small $p$-value, is another sign that our error term in the basic OLS model was autoregressive. This is immediate evidence that the results of this model are more accurate than OLS. We can see that several variables have lost their statistical significance and the coefficient estimate on the percent bachelor's degree variable is somewhat smaller than before. The standard errors are also higher, indicating a larger degree of uncertainty in our point estimate than basic OLS shows. Turning to our main model selection criteria, the AIC value is lower for the spatial lag model compared to OLS but higher than the AIC in the spatial error model. In sum, the spatial lag model performs better and is preferable to OLS, but the spatial error model is the best performing model overall. For any given research project, authors should present all three models and consider a more advanced spatial regression model to provide further robustness checks and ensure readers that results are consistent across varying model specifications.
+We can now evaluate the spatial lag model both in terms of how it performs compared to OLS and the spatial error model. The statistical significance of $\rho$, as indicated by the extremely small $p$-value, is another sign that our error term in the basic OLS model was autoregressive. This is immediate evidence that the results of this model are more accurate than OLS. We can see that several variables have lost their statistical significance and the coefficient estimate on the percent bachelor's degree variable is somewhat smaller than before. The standard errors are also higher, indicating a larger degree of uncertainty in our point estimate than basic OLS shows. Turning to our main model selection criteria, the AIC value is lower for the spatial lag model compared to OLS but higher than the AIC in the spatial error model. In sum, the spatial lag model performs better and is preferable to OLS, but the spatial error model is the best performing model overall. For any given research project, authors should present all three models and consider a more advanced spatial regression model to provide further robustness checks and ensure readers that results are consistent across varying model specifications.
 
-To that end, we present all three models in the same table here:
+To that end, we present all three models in the same table for ease of analysis here:
 
 ```{r 3 models table, echo=FALSE, results='asis', warning=FALSE, message=FALSE, echo=FALSE}
 stargazer(ols.1, ols.2, spat_err.1, spat_err.2, spat_lag.1, spat_lag.2, type = "html", 
@@ -259,48 +261,47 @@ stargazer(ols.1, ols.2, spat_err.1, spat_err.2, spat_lag.1, spat_lag.2, type = "
 
 ## Geographically Weighted Regression
 
-Following our discussion of the two main workhorse models of spatial regression, the spatial error and the spatial lag models, we talked about several more advanced techniques to estimate spatial relationships that contain a high degree of spatial autocorrelation or have heterogeneity (LISA) in their spatial autocorrelation. We now end our applied section with showing how to implement one of the most common of the more advanced models: the GWR model. Specifically, we estimate a geographically weighted regression model, compare its performance to the above models, and visualize the results.
-
-`library(GWmodel)` in tandem with `library(spdep)` provides the tools needed to estimate a geographically weighted regression model. We first need to remove all NAs from the dataset to accurately calculate the weights. 
+Following our discussion of the two main workhorse models of spatial regression, the spatial error and the spatial lag models, we talked about several more advanced techniques to estimate spatial relationships that contain a high degree of spatial autocorrelation or have heterogeneity (LISA) in their spatial autocorrelation. We now end our applied section with showing how to implement one of the most common and poweful of the more advanced models: the GWR model. We start by estimating a geographically weighted regression model, compare its performance to the above models, and visualize the results. `library(GWmodel)` in tandem with `library(spdep)` provides the tools needed to estimate a geographically weighted regression model. We first need to remove all NAs from the dataset to accurately calculate the weights. 
 
 ```{r}
 # Remove all the NAs in the dataset
 brook_shape_no_na <- brook_shape %>% 
-  tidyr::drop_na()
+  drop_na()
 ```
 
 Now that we have removed the NAs, we can calculate the weights for each unit. Remember: GWR models run separate regressions for each spatial unit.
 
 ```{r gwr weights}
 # Estimate an optimal bandwidth
-weights <- GWmodel::bw.gwr(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + africaninl) + 
+weights <- GWmodel::bw.gwr(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +
+                           log(1 + africaninl) + 
                            log(1 + asianinlab) + log(1 + hispanicin),
-                         data = brook_shape_no_na %>% 
+                           data = brook_shape_no_na %>% 
                            sf::as_Spatial(), 
-                         approach = 'AICc', kernel = 'bisquare', 
-                         adaptive = TRUE)
+                           approach = 'AICc', kernel = 'bisquare', 
+                           adaptive = TRUE)
 ```
 
-Now that we have the weights calculated, we can run the main GWR model. The code and results to the model are below.
+Now that we have the weights calculated, we can run the main GWR model. The code and results to run the model and display the results are below. Unfortunately, we cannot use `library(stargazer)` to create a nicely formatted table for GWR models due to the nature and complexity of the output.
 
 ```{r gwr model, warning=FALSE, message=FALSE}
-gwr_model <- GWmodel::gwr.basic(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  log(1 + africaninl) + 
-                           log(1 + asianinlab) + log(1 + hispanicin),
-                         data = brook_shape_no_na %>% 
-                         sf::as_Spatial(), 
-                     bw = weights, kernel = "bisquare", adaptive = TRUE)
-class(gwr_model)
-"print"(gwr_model)
+gwr_model <- GWmodel::gwr.basic(poverty_rate~log(1 + bach_rate) + log(1 + popinlabou) +  
+                                log(1 + africaninl) + 
+                                log(1 + asianinlab) + log(1 + hispanicin),
+                                data = brook_shape_no_na %>% 
+                                sf::as_Spatial(), 
+                                bw = weights, kernel = "bisquare", adaptive = TRUE)
+print(gwr_model)
 ```
 
 
-The output, shown above, gives a wealth of information about regression results, goodness-of-fit metrics, and the more meta information about the estimation procedure. Let's go over some of it now. We see first the results of the global regression and below we see the results of the GWR. Importantly, the GWR output gives us a range of coefficient estimates as we have conducted an individual regression model for each census tract. The results that we see in the second table are actually more like descriptive statistics of the distribution of estimated coefficients and regression results. We can also see the more meta information of our GWR models such as the adaptive bandwidth, the kernel function, and the distance metric. We have left all of these values default as suggested by Fotheringham et al. (2002) & Goovaerts (2008).
+The output, shown above, gives a wealth of information about regression results, goodness-of-fit metrics, and the more meta information about the estimation procedure. Let's go over some of it now. We see first the results of the global regression and below, in the second section, we see the results of the GWR. Importantly, the GWR output gives us a range of coefficient estimates since we have conducted an individual regression model for each census tract. The results that we see in the second table are actually more like descriptive statistics of the distribution of estimated coefficients and other regression result metrics. We can also see the more meta information of our GWR models such as the adaptive bandwidth, the kernel function, and the distance metric. We have left all of these values default as suggested by Fotheringham et al. (2002) & Goovaerts (2008).
 
-In terms of model selection, the GWR performs better based on AIC values, with the AIC for the GWR model being the lowest of all models tested. This result indicates that the GWR models is the best performing model compared to OLS, the spatial lag, and the spatial error models. The adjusted $R^2$ value is also higher in the GWR model as compared to OLS. We also have a higher coefficient to standard error ratio giving us a higher t-value and a more certain estimate. While the coefficients have not changed drastically from the OLS model results, we know through the numerous techniques to detect and estimate spatial autocorrelation, that our relationship exhibited spatial autoregressive qualities. Because of this, OLS should not be used. Further, we were able to increase the performance of our models, in terms of AIC, by employing more advanced spatial modeling techniques. 
+In terms of model selection, the GWR performs better based on AIC values that the other three models that we have estimated, with the AIC for the GWR model being the lowest of all models tested. This result indicates that the GWR models is the best performing model compared to OLS, the spatial lag, and the spatial error models. The adjusted $R^2$ value is also higher in the GWR model as compared to OLS. We also have a higher coefficient to standard error ratio giving us a higher t-value and a more certain point estimate. While the coefficients have not changed drastically from the OLS model results, we know through the numerous techniques to detect and estimate spatial autocorrelation, that our relationship exhibited spatial autoregressive qualities and is now more accurate. We were able to increase the performance of our models, in terms of AIC, by employing GWR, showing the benefits of employing more advanced spatial modeling techniques.
 
 ## Mapping Geographically Weighted Regression Results
 
-GWR models offer a key benefit in unit level metrics that allow us to evaluate and visualize our model results on a local level. Accordingly, an important and powerful aspect of `library(GWmodel)` is the ability to easily visualize results for each spatial unit. We first need to process our model results into a form that can extract coefficients, standard errors, goodness-of-fit, and other metrics from our GWR model. Specifically, `spplot()` cannot recognize the names of our variables resulting from the GWR model estimation, so we need to change the names.
+GWR models offer a key benefit in unit level metrics that allow us to evaluate and visualize our model results on a localized level. Accordingly, an important and powerful aspect of `library(GWmodel)` is the ability to easily visualize results for each spatial unit. We first need to process our model results into a form that can extract coefficients, standard errors, goodness-of-fit, and other metrics from our GWR model. Specifically, `spplot()` cannot recognize the names of our variables resulting from the GWR model estimation (DGES 2022), so we need to change the names, which the following code does.
 
 ```{r processing gwr results}
 ## Processing GWR model for visualization
@@ -308,7 +309,8 @@ gwr_proc_data <- gwr_model$SDF@data
 ## Changing Bachelor's Degree Variable Name
 gwr_proc_data$coefbach <- gwr_proc_data$`log(1 + bach_rate)`
 ## Calculating p-values
-gwr_proc_data$bachp <- 2*pt(-abs(gwr_proc_data$`log(1 + bach_rate)_TV`), df = dim(gwr_proc_data)[1] -1)
+gwr_proc_data$bachp <- 2*pt(-abs(gwr_proc_data$`log(1 + bach_rate)_TV`), 
+                            df = dim(gwr_proc_data)[1] -1)
 ## Creating a standard error variable
 gwr_proc_data$sebach <- gwr_proc_data$`log(1 + bach_rate)_SE`
 ## Finalizing the preprocessing
@@ -316,32 +318,34 @@ processed_gwr_results <- gwr_model$SDF
 processed_gwr_results@data <- gwr_proc_data
 ```
 
-Now that we have the data processed, we end with the visualization of the GWR model results. Since we have estimated many regression models, we have resulting metrics for every single census tract that we can create maps out of. Perhaps one of the richest ways to visualize heterogeneity in spatial autocorrelation is with the following plots that visualize the distributions of our key model results across each census tract in Brooklyn. Visualizing the GWR models results in this fashion is an incredibly powerful technique to show how deleterious spatial autocorrelation can be and to show what localized spatial autocorrelation looks like. We start with mapping localized $R^2$ values.
+Now that we have the data processed, we end this section with the visualization of the GWR model results. Since we have estimated a series of regression models, we have resulting metrics for every single census tract that we can create maps with. Perhaps one of the richest ways to visualize heterogeneity in spatial autocorrelation is with the following plots that visualize the distributions of our key model results across each census tract in Brooklyn. Visualizing the GWR models results in this fashion is an incredibly powerful technique to show how deleterious spatial autocorrelation can be and to show what localized spatial autocorrelation looks like. We start with mapping localized $R^2$ values.
 
 ```{r plotting gwr results r2}
 spplot(processed_gwr_results, "Local_R2", main="Local Pseudo R Squared Values")
 ```
 
-Mapping the pseudo $R^2$ values for each census tract shows the heterogeneity in model fit depending on the tract. This adds a level of richness to our understanding of our models because we know that our model specification performs higher when estimating the effect of education on poverty in some census tracts compared to others.
+Mapping the pseudo $R^2$ values for each census tract shows the heterogeneity in model fit depending on the tract. This adds a level of richness to our understanding of our models because we know that our model specification performs better when estimating the effect of college education rates on poverty rates in some census tracts compared to others.
 
 ```{r plotting gwr results coef}
 spplot(processed_gwr_results, "coefbach", main="Bachelor's Degree Estimated Coefficients")
 ```
 
-The map of estimating coefficients above shows where the effect of education on poverty, controlling for all other factors in the model, is the highest and lowest. While our overall coefficient estimate is negative, we can see a cluster in central Brooklyn where the estimated coefficient is positive. This tells us that bachelor's degree attainment does not always lead to lower levels of poverty. We can also further see clustering of high and low coefficients around the borough.
+The map of estimated coefficients above shows where the effect of college education rates on poverty rates, controlling for all other factors in the model, is the highest and lowest. While our overall coefficient estimate is negative, we can see a cluster in central Brooklyn where the estimated coefficient is positive. This tells us that bachelor's degree attainment does not always lead to lower levels of poverty and its effect is heterogeneous across spatial units. We can also further see clustering of high and low coefficients in different locations around the borough.
 
 ```{r plotting gwr results se}
 spplot(processed_gwr_results, "sebach", main="Standard Error of Bachelor's Degree Coefficients")
 ```
 
-The map above shows the distribution of standard errors. We see the lowest standard errors on the entire west side of Brooklyn with the highest standard errors in the northeastern parts of the borough. We can use this map to visualize the distribution of our uncertainty in our estimated coefficients and see where the confidence intervals will be the highest and the lowest.
+This third map shows the distribution of standard errors across census tracts. We see the lowest standard errors on the entire west side of Brooklyn with the highest standard errors in the northeastern parts of the borough. We can use this map to visualize the distribution of our uncertainty in our estimated coefficients and see where the confidence intervals will be the highest and the lowest. In other words, this is a map of our uncertainty concerning our estimated coefficients.
 
 ```{r plotting gwr results p}
 spplot(processed_gwr_results, "bachp", main="p-value of Bachelor's Degree Coefficients")
 ```
 
-Finally, we map the distribution of $p$-values. We can see extremely low $p$-values, indicating statistical significance across the majority of the borough with only a small cluster of census tracts where the rate of college education was not a statistically significant predictor of poverty rates. It is an extremely good idea to create these visualizations whenever we run a GWR model so that we can better characterize the full distribution of model results. Since GWR runs many models, only looking at averaged metrics loses the richness that makes GWR models valuable to researchers interested in estimating spatial relationships.
+Finally, we map the distribution of $p$-values. We can see extremely low $p$-values, indicating statistical significance, across the majority of the borough with only a small cluster of census tracts where the rate of college education was not a statistically significant predictor of poverty rates. 
 
-## Concluding Remarks on Applied Example
+It is an extremely good idea to create these visualizations whenever we run a GWR model so that we can better characterize the full distribution of our model results. Since GWR runs many models, only looking at averaged metrics loses the richness that makes GWR models valuable to researchers.
 
-We have presented an applied example that shows how to detect and manage spatial autocorrelation and run spatial regression models. The analysis presented here is not the only way that spatial data can be analyzed and we only considered one of the more advanced spatial regression models. It is up to researchers to make wise decisions about model specification and to be careful in how control to for differing types of spatial autocorrelation. In the final section of this treatment of spatial regression, we consider the contributions to many different fields that spatial regression methods have been vital for.
+## Concluding Remarks
+
+We have presented an applied example that shows how to detect and manage spatial autocorrelation. The analysis presented here is not the only way that spatial data can be analyzed, and we only considered one of the more advanced spatial regression models at our disposal. It is up to researchers to make wise decisions about model specification and to be careful in how to control for differing types of spatial autocorrelation. In the final section of this treatment of spatial regression, we consider the contributions to many different fields that spatial regression methods have been vital for.
