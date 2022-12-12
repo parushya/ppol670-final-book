@@ -1,0 +1,103 @@
+# Basics of Geospatial Data {.unnumbered}
+
+In this short introduction, we discuss prerequisites, offer some motivations, and cover basic geospatial analysis in *R*. To showcase the power of geospatial analysis for applied researchers, we rely on an application of spatial analysis to explore poverty and education in New York. By the end of this chapter, you should be comfortable finding, cleaning, and visualizing the spatial data that you are interested in. Only when you have mastered these concepts, can you confidently begin to model spatial relationships.
+
+## Motivation
+
+Geospatial data is ubiquitous in the social sciences and tools to systematically analyze spatial variables and spatial relationships should be a part of every data scientist and social scientist's toolkit. From visualizing election returns in American politics to depicting different countries' gross domestic products (GDP), the ability to make a map is immensely useful. Every article concerning state and local politics in political science will usually showcase a map of states or counties at some point in order to effectively illustrate the variables important to the analysis. Macroeconomists and comparative political scientists conducting cross-national studies similarly use maps to illustrate the spatial distribution of their key variables. Even when researchers are modeling relationships that are not inherently spatial, including a map is a powerful visualization technique. 
+
+If the unit of analysis is a spatial unit - such as country-level, state-level, county-level or topographical, maps are perhaps the best way to visualize the distribution of your variables of interest across space. Further, sociologists, economists, and epidemiologists who are interested in examining crime and health data will find particular advantages in being able to map crime rates, the prevalence of a disease, or the health outcomes in different areas of a town or city. Public administration and policy researchers who want to make recommendations to decision-makers about where to build police stations, hospitals, fire departments, parks, or concentrate COVID vaccination and testing supplies, public assistance benefits, and relief efforts from inclement weather can utilize a well-made map and spatial regression techniques to draw conclusions from.
+
+Perhaps most importantly, researchers who want their work to be public-facing and read by people without technical expertise could find more success by displaying their results and analysis through maps than through tables or even other, non-map, data visualizations.
+
+Geospatial data is also extremely common and readily available, with easy access to US Census data through `library(tidycensus)` and shapefiles and spatial data available through many cities, states, and government agencies' data repositories. The use of application programming interfaces (APIs) has made accessing the wealth of spatial data collected by the world's governments and businesses extremely easy. `library(sf)` also works well with `library(dplyr)` and `library(ggplot2)` to make creating attractive maps just as easy as accessing spatial data, overcoming the inherent challenges with spatial data being multidimensional.
+
+As a data scientist or social scientist thinking through their research design and deliberating on the nature of the relationship they want to model, if the variables or relationship that is decided on is spatial, then making a basic map and thinking through the spatial distribution of important variables, should be the researchers first step. Where do researchers go after the creation of their map, though? The goal of this treatment on spatial regression is to equip applied researchers with the tools and theoretical background needed to go a step beyond mere visualization and discussion of geospatial data to estimating geospatial regression models. Further, readers will learn when spatial autocorrelation could render standard errors from OLS models incorrect and how to detect spatial autocorrelation in spatial data. Essentially, whenever a researcher is modeling a relationship that has spatial autocorrelation, they should use one of the techniques described in this work to purge autocorrelation from the error term of their models. After reading this, researchers will know when to use spatial regression methods and how to visualize the results of spatial regression models.
+
+## Two Types of Spatial Data
+
+Spatial Data provides information on 'something' with respect to its location. This information is called *attribute*. In itself, attribute is not spatial data. In combination with information about it's position it becomes spatial data.\
+*Temperature* at a point when combined with latitude or longitude, *height of a person* in a room with respect to distance from two walls, etc., are all examples of attributes with information of location becoming spatial data.\
+Purely spatial information of entities are represented by data models. Basic types of data models that we come across in geospatial analysis are the following:\
+1. Point - A single point.\
+2. Line - A stream of ordered points connected by straight line segments.\
+3. Polygon - A set of lines forming a closed loop enclosing an area.\
+4. Grid - A collection of points or rectangular cells, organised in regular lattice.
+
+The first three are known as **Vector Data**, and represent entities as exactly as possible while the the last one composes of **Raster Data**. Raster data is used to represent continuous values by breaking them into finer tessellations (Bivand et al, 2008).\
+Same data can be expressed as both raster and vector data types. Just that in raster form, they are stored as values of pixels in amatrix of cells, in vector they are stored as values attributes in association with a set of coordinates.\
+Shapefiles that we have been using are an example of vector data and and satellite images are examples of raster data.
+
+```{r echo=FALSE}
+knitr::include_graphics("vector_raster.png") 
+```
+
+Photo by: [GISlounge](https://www.gislounge.com/geodatabases-explored-vector-and-raster-data/)
+
+By now, it should be pretty clear that skills working with spatial data are essential for data scientists and social scientists. To further illustrate the benefits of knowing how to analyze geospatial data, we will discussed an applied example.
+
+As mentioned above, the first step in any geospatial analysis is creating a map of the variables of interest. In order to start a spatial analysis, you will first need to collect spatial data that can be used to answer your research question. This can be done with the `get_acs()` function from `library(tidycensus)`. The goal is acquire measures of the variables that you are interested in and the geometry data needed to plot the map and analyze spatial units. Shapefiles contain this information. You can find this geometry information, in the form of shapefiles, from many governmental and private businesses' data portals. Using `library(sf)` makes creating maps easy. This guide focuses mainly on spatial regression, so its use of `library(sf)` is limited. More help with using `library(sf)` can be found [here](https://github.com/rstudio/cheatsheets/blob/main/sf.pdf) and [here](https://walker-data.com/census-r/mapping-census-data-with-r.html).
+
+We start our analysis by reading our data into *R* with `st_read()`. The example code below utilizes data from the American Community Survey's 2008-2012 results. This data can be found [here](https://geodacenter.github.io/data-and-lab//NYC_Tract_ACS2008_12/). We also use `st_set_crs()` to set the CRS ID to 4326. The CRS, or coordinate reference system, ID tells *R* where the points and lines that make up your data's spatial geometry are located in geographic space. The CRS ID also tells *R* what method should be used to flatten or project spatial units into geographic space. Below we use `library(sf)` and `library(dplyr)` together to read in the data and set the CRS ID to 4326. The `clean_names()` function from `library(janitor)` makes all of the variable names lowercase and replaces spaces with underscores.
+
+```{r data reading, warning=FALSE,message=FALSE}
+## Packages Needed
+library(tidyverse)
+library(sf)
+
+## Reading in shapefile
+ny_shape <- 
+  st_read("data/nyctract_acs/NYC_Tract_ACS2008_12.shp") %>%
+  st_set_crs(value = 4326) %>%
+  janitor::clean_names()
+```
+
+We now have a dataset read into *R* with 2166 observations of 114 variables covering demographic and economic information at the census tract level for all of New York's five boroughs. This is obviously quite a lot of variables and numerous questions of interest for social scientists and policy researchers can be answered with this dataset. For tractability, let's start by limiting our analysis to a couple of variables in one of New York's boroughs. We will visualize poverty in Brooklyn, New York City's most populous borough. 
+
+Before starting any analysis, researchers will probably need to go through the sometimes lengthy and difficult process of data cleaning and wrangling. During the data cleaning and wrangling stage, researchers can remove NA values they do not want; create new variables that better capture your intended research design; and format your data in the most convenient manner for your analysis. For this example, much of the cleaning of the raw ACS data was done by the Department of Geography and Environmental Science at Hunter College in New York, New York. They have also included the weighted variables which account for the survey's complex sampling procedure. The only wrangling necessary is to turn the poverty variable, currently measured as the total number of people living below the poverty line in a census tract into a poverty rate variable that captures the proportion of a census tract's residents living below the poverty line. The code below creates this variable and uses `geom_sf()` to create a map of poverty in Brooklyn. We also filter to exclude relatively underpopulated census tracts. Since we plan to utilize the proportion of a census tract's residents with a bachelor degree to predict the census tract's poverty rate, we also create a proportion of residents with a bachelor's degree variable.
+
+```{r motivating map 1, warning=FALSE,message=FALSE}
+## Poverty Map
+brook_shape <- ny_shape %>%
+  filter(boroname == "Brooklyn", poptot>200) %>%
+  mutate(poverty_rate=(poor/poptot),
+         bach_rate = (onlybachel/poptot))
+
+m1 <- brook_shape %>%
+  ggplot(aes(fill=poverty_rate)) +
+  geom_sf(color="white", lwd=.1) +
+  scale_fill_gradient(guide="colorbar", na.value="white") + 
+  theme_void() +
+  scale_fill_gradient2(midpoint = mean(brook_shape$poverty_rate)) +
+  labs(title="Poverty Rate in Brooklyn",
+       fill=NULL, caption = "Data Source: 2012 ACS")
+m1
+```
+
+We can see from the map above that the poverty rate is relatively low across much of Brooklyn, but there are several pockets throughout the bureau that exhibit high levels of poverty. These clusters are indicated by the darker purple tracts above. The darker the purple, the higher poverty, and the darker the red, the lower the poverty rate as compared to the mean level of poverty in the borough. Utilizing the `scale_fill_gradient2()` function with the `midpoint` argument, we can see that the white tracts represent the average level of poverty throughout Brooklyn. 
+
+The map shows that the southern tip and the northeast section of Brooklyn have the highest rates of poverty in the borough. The southeastern and the northwestern census tracts seem to have the lowest levels of poverty. These observations are a good first start in analyzing the distribution of poverty across Brooklyn, and, if we only wanted to conduct a descriptive study, we could perhaps end here. Our goal, however, is explore the relationship between a college education and a reduction in poverty rates. To do this, we need to connect a tract's rate of poverty with its rate of college education. A logical next step is to draw our map of the proportion of a tract's residents that graduated college. would be to draw a map of education. For our purposes here, we will map the percent of the population with a bachelor's degree in each census tract. The map, and the code to produce the map, is below:
+
+```{r motivating map 2 , warning=FALSE,message=FALSE}
+## Bachelor's Degree Map
+m2 <- brook_shape %>%
+  ggplot(aes(fill=bach_rate)) +
+  geom_sf(color="white", lwd=.1) +
+  scale_fill_gradient(guide="colorbar", na.value="white") + 
+  theme_void() +
+  scale_fill_gradient2(midpoint = mean(brook_shape$bach_rate)) +
+  labs(title="Percent Bachelor's Degree in Brooklyn",
+       fill=NULL, caption = "Data Source: 2012 ACS")
+m2
+```
+Mapping the proportion of Brooklyn residents with a bachelor's degree in each census tract shows that the Northwest part of Brooklyn is highly educated, and there are some clustered census tracts of high bachelor's degree attainment throughout the city, but the majority of the census tracts in Brooklyn have below the average rate of college educated residents. Now that we have our maps, we can display them side-by-side using `library(patchwork)` to try and draw informal inferences from the distributions of poverty rates and bachelor degree holders.
+
+```{r motivating map 3 , warning=FALSE,message=FALSE}
+## Presenting Maps side-by-side
+library(patchwork)
+m1 + m2
+```
+
+We can see that the areas with high levels of poverty appear to have lower rates of residents holding bachelor degrees. For example, the northwest cluster of high college education rate census tracts is also a cluster of low poverty rate tracts. The eastern cluster of low, the lowest consistent cluster in the borough, college degree attainment census tracts is also a cluster of high poverty census tracts. Looking at these maps, there does seem to be a pattern between low education and high poverty areas. This is generally supportive of the notion that higher levels of education lead to poverty reduction, but we would want a more formal hypothesis test before drawing any conclusions. This visual analysis would also only be able to identity a correlation, at best, without employing the more rigorous techniques of causal inference. There further appears to be clusters of poverty and clusters of higher educated census tracts evident in the maps which indicate some degree of spatial autocorrelation. 
+
+From these maps, we cannot infer a causal effect, prediction, or any rigorous parameter estimate from simply looking. Any observation based conclusion will be purely conjecture. While this visualization may be important for presenting results in the your final report or helping to understand how variables are distributed across space, our treatment on spatial regression will provide researchers with the necessary tools to take geospatial analysis one step further and estimate causal effects and predictions based on spatial relationships. While visualizing spatial data in the form of maps is one of the benefits of working with geospatial data, the richness of the data can be further utilized in more advanced statistical techniques like linear regression. In sum, there are two main reasons to learn spatial regression tools: to be able to move beyond mapping variables to estimating complex spatial relationships and to know how to create spatial models that purge spatial autocorrelation from the error term.

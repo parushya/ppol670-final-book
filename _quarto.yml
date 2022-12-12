@@ -9,18 +9,11 @@ book:
   date: "12/12/2022"
   chapters:
     - index.qmd
-    - intro.qmd
-    - chapter2-spatial-viz.qmd
-    - part: chapter-3-spatial-autocorrelation-understanding.qmd
-      chapters: 
-        - chapter-3-1-sac-moran.qmd
-    - chapter-4-modelling.qmd
-    - chapter-5-adv-srm.qmd
-    - chpater-6-applied-example.qmd
-    - summary.qmd
+    - chapter1.qmd
+    - chapter2.qmd
+    - chapter3.qmd
+    - chapter4.qmd
     - references.qmd
-
-bibliography: references.bib
 
 format:
   html:
