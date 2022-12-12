@@ -1028,7 +1028,7 @@ Number of parameters estimated: 8
 AIC: -1574.2, (AIC for lm: -1334.5)</code></pre>
 </div>
 </div>
-<p>Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of <code>errorsarlm()</code> using the <code>summary()</code> function (not shown here) in base R provides information about how well the spatial error model <em>and</em> the OLS mdoel performed. The AIC for the spatial error model is <span class="math inline">\(\approx\)</span> -1574 and the AIC for the OLS model is <span class="math inline">\(\approx\)</span> -1334, indicating that the spatial error model performed better than OLS.</p>
+<p>Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of <code>errorsarlm()</code> using the <code>summary()</code> function in base R provides information about how well the spatial error model <em>and</em> the OLS mdoel performed. The AIC for the spatial error model is <span class="math inline">\(\approx\)</span> -1574 and the AIC for the OLS model is <span class="math inline">\(\approx\)</span> -1334, indicating that the spatial error model performed better than OLS.</p>
 <p>In terms of substantive changes, there are few. We see no significant changes in the statistical significance of the variables in the model. Overall the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor’s degree, remains statistically significant at the <span class="math inline">\(p&lt;.01\)</span> level and has a similar, yet not exactly the same, coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainty in the OLS model.</p>
 </section>
 <section id="spatial-lag-results" class="level2">
@@ -2067,7 +2067,7 @@ Adaptive bandwidth (number of nearest neighbours): 78 AICc value: -1786.698 </co
 <pre><code>   ***********************************************************************
    *                       Package   GWmodel                             *
    ***********************************************************************
-   Program starts at: 2022-12-12 17:22:41 
+   Program starts at: 2022-12-12 17:50:27 
    Call:
    GWmodel::gwr.basic(formula = poverty_rate ~ bach_rate + lab_force_rate + 
     per_aa + per_asian + per_his, data = brook_shape_no_na %&gt;% 
@@ -2138,7 +2138,7 @@ Adaptive bandwidth (number of nearest neighbours): 78 AICc value: -1786.698 </co
    Adjusted R-square value:  0.7193722 
 
    ***********************************************************************
-   Program stops at: 2022-12-12 17:22:41 </code></pre>
+   Program stops at: 2022-12-12 17:50:27 </code></pre>
 </div>
 </div>
 <p>The output, shown above, gives a wealth of information about regression results, goodness-of-fit metrics, and meta information about the estimation procedure. Let’s go over some of it now. We see first the results of the global regression and below, in the second section, we see the results of the GWR. Importantly, the GWR output gives us a range of coefficient estimates since we have conducted an individual regression model for each census tract. The results that we see in the second table are actually more like descriptive statistics of the distribution of estimated coefficients and other regression result metrics. We can also see the more meta information of our GWR models such as the adaptive bandwidth, the kernel function, and the distance metric. We have left all of these values default as suggested by Fotheringham et al.&nbsp;(2002) &amp; Goovaerts (2008).</p>
