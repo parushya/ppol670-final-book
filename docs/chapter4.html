@@ -404,12 +404,16 @@ Moran I statistic       Expectation          Variance
 <li><span class="math inline">\(\delta \Lambda'\)</span> is a matrix of covariates and a vector of their coefficients</li>
 <li><span class="math inline">\(\nu_i\)</span> is the error term which we can test for spatial autocorrelation</li>
 </ul>
-<p>Knowing that our data is spatially autocorrelated, we want to use the techniques discussed in previous chapters to purge our error term of spatial autocorrelation. For illustrative purposes, however, we will first estimate the above OLS model. We take the additional step of logging our independent variables to both linearize their relationship with <span class="math inline">\(poverty_i\)</span> and to ensure our errors will be as symmetrically distributed as possible. We include covariates for the proportion of a census tracts’ population that is a part of minority identity groups such as African-American, Asian, and Hispanic and a variable that indicates labor force participation. Our analysis here is quite basic and only intended for illustrative purposes. The code below runs two models with <code>lm()</code> and saves the results as <code>ols.</code> and <code>ols.2</code>.</p>
+<p>Knowing that our data is spatially autocorrelated, we want to use the techniques discussed in previous chapters to purge our error term of spatial autocorrelation. For illustrative purposes, however, we will first estimate the above OLS model. We include covariates for the proportion of a census tract’s population that is part of a minority identity group such as African-American, Asian, and Hispanic and a variable that indicates the tract’s labor force participation rate. Our analysis here is quite basic and only intended for illustrative purposes. The code below runs two models with <code>lm()</code> and saves the results as <code>ols.</code> and <code>ols.2</code>. We further use the <code>AIC()</code> command to calculate AIC values which will be used for model selection criteria.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## OLS Models</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.1</span> <span class="ot">&lt;-</span><span class="fu">lm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate), <span class="at">data=</span>brook_shape)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.2</span> <span class="ot">&lt;-</span><span class="fu">lm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin), <span class="at">data=</span>brook_shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.1</span> <span class="ot">&lt;-</span><span class="fu">lm</span>(poverty_rate<span class="sc">~</span>bach_rate, <span class="at">data=</span>brook_shape)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.2</span> <span class="ot">&lt;-</span><span class="fu">lm</span>(poverty_rate<span class="sc">~</span>bach_rate <span class="sc">+</span> lab_force_rate <span class="sc">+</span>  per_aa <span class="sc">+</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             per_asian <span class="sc">+</span> per_his, <span class="at">data=</span>brook_shape)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Calculating AIC</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.1</span><span class="sc">$</span>AIC <span class="ot">&lt;-</span> <span class="fu">AIC</span>(ols<span class="fl">.1</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.2</span><span class="sc">$</span>AIC <span class="ot">&lt;-</span> <span class="fu">AIC</span>(ols<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then visualize the results with <code>library(stargazer)</code>.</p>
 
@@ -460,20 +464,20 @@ Poverty Rate
 Bachelor’s Degree
 </td>
 <td>
--0.670<sup>***</sup>
+-0.503<sup>***</sup>
 </td>
 <td>
--0.602<sup>***</sup>
+-0.317<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.034)
+(0.027)
 </td>
 <td>
-(0.036)
+(0.039)
 </td>
 </tr>
 <tr>
@@ -491,7 +495,7 @@ Labor Force
 <td>
 </td>
 <td>
-0.0004
+-0.335<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -500,7 +504,7 @@ Labor Force
 <td>
 </td>
 <td>
-(0.008)
+(0.045)
 </td>
 </tr>
 <tr>
@@ -518,7 +522,7 @@ African-American Pop
 <td>
 </td>
 <td>
--0.002
+0.006
 </td>
 </tr>
 <tr>
@@ -527,7 +531,7 @@ African-American Pop
 <td>
 </td>
 <td>
-(0.002)
+(0.015)
 </td>
 </tr>
 <tr>
@@ -545,7 +549,7 @@ Asian Pop
 <td>
 </td>
 <td>
--0.005<sup>**</sup>
+-0.044
 </td>
 </tr>
 <tr>
@@ -554,7 +558,7 @@ Asian Pop
 <td>
 </td>
 <td>
-(0.002)
+(0.031)
 </td>
 </tr>
 <tr>
@@ -572,7 +576,7 @@ Hispanic Pop
 <td>
 </td>
 <td>
-0.025<sup>***</sup>
+0.188<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -581,7 +585,7 @@ Hispanic Pop
 <td>
 </td>
 <td>
-(0.003)
+(0.023)
 </td>
 </tr>
 <tr>
@@ -597,10 +601,10 @@ Hispanic Pop
 Constant
 </td>
 <td>
-0.329<sup>***</sup>
+0.311<sup>***</sup>
 </td>
 <td>
-0.216<sup>***</sup>
+0.455<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -610,7 +614,7 @@ Constant
 (0.007)
 </td>
 <td>
-(0.052)
+(0.024)
 </td>
 </tr>
 <tr>
@@ -641,43 +645,21 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.339
+0.312
 </td>
 <td>
-0.401
+0.413
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
-Adjusted R<sup>2</sup>
+Akaike Inf. Crit.
 </td>
 <td>
-0.338
+-1,223.201
 </td>
 <td>
-0.397
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-Residual Std. Error
-</td>
-<td>
-0.105 (df = 747)
-</td>
-<td>
-0.100 (df = 743)
-</td>
-</tr>
-<tr>
-<td style="text-align:left">
-F Statistic
-</td>
-<td>
-383.002<sup>***</sup> (df = 1; 747)
-</td>
-<td>
-99.440<sup>***</sup> (df = 5; 743)
+-1,334.482
 </td>
 </tr>
 <tr>
@@ -710,12 +692,12 @@ F Statistic
 <p><span class="math display">\[poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}\]</span> <span class="math display">\[\nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i\]</span> The following code estimates the model:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Spatial Regression Models</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>spat_err<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate), <span class="at">data=</span>brook_shape,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>spat_err<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(poverty_rate<span class="sc">~</span>bach_rate, <span class="at">data=</span>brook_shape,</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>spat_err<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl)<span class="sc">+</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin), <span class="at">data=</span>brook_shape,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>spat_err<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(poverty_rate<span class="sc">~</span>bach_rate <span class="sc">+</span> lab_force_rate <span class="sc">+</span>  per_aa <span class="sc">+</span> </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                           per_asian <span class="sc">+</span> per_his, <span class="at">data=</span>brook_shape,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 <table style="text-align:center">
@@ -765,20 +747,20 @@ Poverty Rate
 Bachelor’s Degree
 </td>
 <td>
--0.740<sup>***</sup>
+-0.558<sup>***</sup>
 </td>
 <td>
--0.702<sup>***</sup>
+-0.382<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.048)
+(0.039)
 </td>
 <td>
-(0.050)
+(0.048)
 </td>
 </tr>
 <tr>
@@ -796,7 +778,7 @@ Labor Force
 <td>
 </td>
 <td>
--0.003
+-0.309<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -805,7 +787,7 @@ Labor Force
 <td>
 </td>
 <td>
-(0.007)
+(0.038)
 </td>
 </tr>
 <tr>
@@ -823,7 +805,7 @@ African-American Pop
 <td>
 </td>
 <td>
-0.001
+-0.013
 </td>
 </tr>
 <tr>
@@ -832,7 +814,7 @@ African-American Pop
 <td>
 </td>
 <td>
-(0.002)
+(0.022)
 </td>
 </tr>
 <tr>
@@ -850,7 +832,7 @@ Asian Pop
 <td>
 </td>
 <td>
-0.001
+0.003
 </td>
 </tr>
 <tr>
@@ -859,7 +841,7 @@ Asian Pop
 <td>
 </td>
 <td>
-(0.002)
+(0.037)
 </td>
 </tr>
 <tr>
@@ -877,7 +859,7 @@ Hispanic Pop
 <td>
 </td>
 <td>
-0.010<sup>***</sup>
+0.113<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -886,7 +868,7 @@ Hispanic Pop
 <td>
 </td>
 <td>
-(0.003)
+(0.031)
 </td>
 </tr>
 <tr>
@@ -902,10 +884,10 @@ Hispanic Pop
 Constant
 </td>
 <td>
-0.343<sup>***</sup>
+0.325<sup>***</sup>
 </td>
 <td>
-0.301<sup>***</sup>
+0.470<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -915,7 +897,7 @@ Constant
 (0.012)
 </td>
 <td>
-(0.045)
+(0.027)
 </td>
 </tr>
 <tr>
@@ -946,10 +928,10 @@ Observations
 Log Likelihood
 </td>
 <td>
-768.430
+757.835
 </td>
 <td>
-775.380
+795.116
 </td>
 </tr>
 <tr>
@@ -960,7 +942,7 @@ sigma<sup>2</sup>
 0.007
 </td>
 <td>
-0.007
+0.006
 </td>
 </tr>
 <tr>
@@ -968,10 +950,10 @@ sigma<sup>2</sup>
 Akaike Inf. Crit.
 </td>
 <td>
--1,528.860
+-1,507.669
 </td>
 <td>
--1,534.759
+-1,574.233
 </td>
 </tr>
 <tr>
@@ -979,10 +961,10 @@ Akaike Inf. Crit.
 Wald Test (df = 1)
 </td>
 <td>
-346.893<sup>***</sup>
+361.098<sup>***</sup>
 </td>
 <td>
-298.453<sup>***</sup>
+315.985<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -990,10 +972,10 @@ Wald Test (df = 1)
 LR Test (df = 1)
 </td>
 <td>
-277.613<sup>***</sup>
+286.468<sup>***</sup>
 </td>
 <td>
-217.793<sup>***</sup>
+241.751<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1010,8 +992,44 @@ LR Test (df = 1)
 </tr>
 
 </tbody></table>
-<p>The statistically significant, <span class="math inline">\(p &lt;.01\)</span>, estimate of <span class="math inline">\(\lambda\)</span> above indicates that the error term was spatially autoregressive. Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of <code>errorsarlm()</code> using the <code>summary()</code> function (not shown here) in base R provides information about how well the spatial error model <em>and</em> the OLS mdoel performed. The AIC for the spatial error model is -1534.8 and the AIC for the OLS model is -1319, indicating that the spatial error model performed better than OLS.</p>
-<p>In terms of substantive results, we can see that the percent Asian variable has lost statistical significance. Overall, however, the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor’s degree, remains statistically significant at the <span class="math inline">\(p&lt;.01\)</span> level and has a similar, yet not exactly the same, coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainty in the OLS model.</p>
+<p>The statistically significant, <span class="math inline">\(p &lt;.01\)</span>, estimate of <span class="math inline">\(\lambda\)</span> shown when we run <code>summary()</code> indicates the error term was spatially autoregressive.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Summary Table 2</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(spat_err<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:errorsarlm(formula = poverty_rate ~ bach_rate + lab_force_rate + 
+    per_aa + per_asian + per_his, data = brook_shape, listw = brook_nb, 
+    na.action = na.omit, zero.policy = TRUE)
+
+Residuals:
+       Min         1Q     Median         3Q        Max 
+-0.4760406 -0.0554215 -0.0031557  0.0467179  0.3180549 
+
+Type: error 
+Coefficients: (asymptotic standard errors) 
+                 Estimate Std. Error z value  Pr(&gt;|z|)
+(Intercept)     0.4703096  0.0266867 17.6234 &lt; 2.2e-16
+bach_rate      -0.3823724  0.0481311 -7.9444 1.998e-15
+lab_force_rate -0.3094660  0.0383967 -8.0597 6.661e-16
+per_aa         -0.0128207  0.0222885 -0.5752 0.5651472
+per_asian       0.0034432  0.0369514  0.0932 0.9257592
+per_his         0.1131288  0.0311996  3.6260 0.0002879
+
+Lambda: 0.65103, LR test value: 241.75, p-value: &lt; 2.22e-16
+Asymptotic standard error: 0.036624
+    z-value: 17.776, p-value: &lt; 2.22e-16
+Wald statistic: 315.98, p-value: &lt; 2.22e-16
+
+Log likelihood: 795.1164 for error model
+ML residual variance (sigma squared): 0.0063921, (sigma: 0.07995)
+Number of observations: 749 
+Number of parameters estimated: 8 
+AIC: -1574.2, (AIC for lm: -1334.5)</code></pre>
+</div>
+</div>
+<p>Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of <code>errorsarlm()</code> using the <code>summary()</code> function (not shown here) in base R provides information about how well the spatial error model <em>and</em> the OLS mdoel performed. The AIC for the spatial error model is <span class="math inline">\(\approx\)</span> -1574 and the AIC for the OLS model is <span class="math inline">\(\approx\)</span> -1334, indicating that the spatial error model performed better than OLS.</p>
+<p>In terms of substantive changes, there are few. We see no significant changes in the statistical significance of the variables in the model. Overall the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor’s degree, remains statistically significant at the <span class="math inline">\(p&lt;.01\)</span> level and has a similar, yet not exactly the same, coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainty in the OLS model.</p>
 </section>
 <section id="spatial-lag-results" class="level2">
 <h2 class="anchored" data-anchor-id="spatial-lag-results">Spatial Lag Results</h2>
@@ -1019,12 +1037,12 @@ LR Test (df = 1)
 <p><span class="math display">\[poverty_i=\rho_{lag}\ W_ipoverty_i + \beta\ bachelor_i + \delta X' + \epsilon_i\]</span></p>
 <p>Recall from the previous chapter that we include a weighted lagged dependent variable as an independent variable. We can use nearly the same code as for the spatial error model, expect we substitute <code>lagsarlm()</code> for <code>errorsarlm()</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>spat_lag<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">lagsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate), <span class="at">data=</span>brook_shape,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>spat_lag<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">lagsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin), <span class="at">data=</span>brook_shape,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>spat_lag<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">lagsarlm</span>(poverty_rate<span class="sc">~</span>bach_rate, <span class="at">data=</span>brook_shape,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>spat_lag<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">lagsarlm</span>(poverty_rate<span class="sc">~</span>bach_rate <span class="sc">+</span> lab_force_rate <span class="sc">+</span>  per_aa <span class="sc">+</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                         per_asian <span class="sc">+</span> per_his, <span class="at">data=</span>brook_shape,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 <table style="text-align:center">
@@ -1074,20 +1092,20 @@ Poverty Rate
 Bachelor’s Degree
 </td>
 <td>
--0.394<sup>***</sup>
+-0.289<sup>***</sup>
 </td>
 <td>
--0.378<sup>***</sup>
+-0.151<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.038)
+(0.029)
 </td>
 <td>
-(0.038)
+(0.036)
 </td>
 </tr>
 <tr>
@@ -1105,7 +1123,7 @@ Labor Force
 <td>
 </td>
 <td>
--0.004
+-0.301<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1114,7 +1132,7 @@ Labor Force
 <td>
 </td>
 <td>
-(0.007)
+(0.038)
 </td>
 </tr>
 <tr>
@@ -1132,7 +1150,7 @@ African-American Pop
 <td>
 </td>
 <td>
--0.001
+0.011
 </td>
 </tr>
 <tr>
@@ -1141,7 +1159,7 @@ African-American Pop
 <td>
 </td>
 <td>
-(0.001)
+(0.012)
 </td>
 </tr>
 <tr>
@@ -1159,7 +1177,7 @@ Asian Pop
 <td>
 </td>
 <td>
--0.002
+-0.012
 </td>
 </tr>
 <tr>
@@ -1168,7 +1186,7 @@ Asian Pop
 <td>
 </td>
 <td>
-(0.002)
+(0.026)
 </td>
 </tr>
 <tr>
@@ -1186,7 +1204,7 @@ Hispanic Pop
 <td>
 </td>
 <td>
-0.016<sup>***</sup>
+0.115<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1195,7 +1213,7 @@ Hispanic Pop
 <td>
 </td>
 <td>
-(0.003)
+(0.020)
 </td>
 </tr>
 <tr>
@@ -1211,20 +1229,20 @@ Hispanic Pop
 Constant
 </td>
 <td>
-0.160<sup>***</sup>
+0.145<sup>***</sup>
 </td>
 <td>
-0.125<sup>***</sup>
+0.295<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.014)
+(0.013)
 </td>
 <td>
-(0.046)
+(0.024)
 </td>
 </tr>
 <tr>
@@ -1255,10 +1273,10 @@ Observations
 Log Likelihood
 </td>
 <td>
-738.477
+730.279
 </td>
 <td>
-756.824
+774.156
 </td>
 </tr>
 <tr>
@@ -1277,10 +1295,10 @@ sigma<sup>2</sup>
 Akaike Inf. Crit.
 </td>
 <td>
--1,468.953
+-1,452.557
 </td>
 <td>
--1,497.648
+-1,532.311
 </td>
 </tr>
 <tr>
@@ -1288,10 +1306,10 @@ Akaike Inf. Crit.
 Wald Test (df = 1)
 </td>
 <td>
-242.443<sup>***</sup>
+262.827<sup>***</sup>
 </td>
 <td>
-197.383<sup>***</sup>
+232.916<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1299,10 +1317,10 @@ Wald Test (df = 1)
 LR Test (df = 1)
 </td>
 <td>
-217.706<sup>***</sup>
+231.356<sup>***</sup>
 </td>
 <td>
-180.682<sup>***</sup>
+199.830<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1319,8 +1337,46 @@ LR Test (df = 1)
 </tr>
 
 </tbody></table>
-<p>We can now evaluate the spatial lag model both in terms of how it performs compared to OLS and the spatial error model. The statistical significance of <span class="math inline">\(\rho\)</span>, as indicated by the extremely small <span class="math inline">\(p\)</span>-value, is another sign that our error term in the basic OLS model was autoregressive. This is immediate evidence that the results of this model are more accurate than OLS. We can see that the coefficient estimate on the percent bachelor’s degree variable is somewhat smaller than before. The standard errors are also different, indicating a different degree of uncertainty in our point estimate than the basic OLS or the spatial error model shows. Turning to our main model selection criteria, the AIC value is lower for the spatial lag model compared to OLS but higher than the AIC in the spatial error model. In sum, the spatial lag model performs better and is preferable to OLS, but the spatial error model is the best performing model overall. For any given research project, authors should present all three models and consider a more advanced spatial regression model to provide further robustness checks and ensure readers that results are consistent across varying model specifications.</p>
-<p>To that end, we present all three models in the same table for ease of analysis here:</p>
+<p>We can now evaluate the spatial lag model both in terms of how it performs compared to OLS and the spatial error model. The statistical significance of <span class="math inline">\(\rho\)</span>, as indicated by the extremely small <span class="math inline">\(p\)</span>-value, is another sign that our error term in the basic OLS model was autoregressive. We need to run <code>summary()</code> to see this.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Summary Table 2</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(spat_lag<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:lagsarlm(formula = poverty_rate ~ bach_rate + lab_force_rate + 
+    per_aa + per_asian + per_his, data = brook_shape, listw = brook_nb, 
+    na.action = na.omit, zero.policy = TRUE)
+
+Residuals:
+       Min         1Q     Median         3Q        Max 
+-0.4385864 -0.0601209 -0.0035479  0.0491344  0.3416525 
+
+Type: lag 
+Coefficients: (asymptotic standard errors) 
+                Estimate Std. Error z value  Pr(&gt;|z|)
+(Intercept)     0.295206   0.024397 12.1003 &lt; 2.2e-16
+bach_rate      -0.151275   0.035552 -4.2551 2.090e-05
+lab_force_rate -0.300922   0.038068 -7.9049 2.665e-15
+per_aa          0.010590   0.012395  0.8544    0.3929
+per_asian      -0.012481   0.026176 -0.4768    0.6335
+per_his         0.115435   0.019991  5.7743 7.728e-09
+
+Rho: 0.54558, LR test value: 199.83, p-value: &lt; 2.22e-16
+Asymptotic standard error: 0.035749
+    z-value: 15.262, p-value: &lt; 2.22e-16
+Wald statistic: 232.92, p-value: &lt; 2.22e-16
+
+Log likelihood: 774.1557 for lag model
+ML residual variance (sigma squared): 0.0069761, (sigma: 0.083523)
+Number of observations: 749 
+Number of parameters estimated: 8 
+AIC: -1532.3, (AIC for lm: -1334.5)
+LM test for residual autocorrelation
+test value: 5.9247, p-value: 0.01493</code></pre>
+</div>
+</div>
+<p>This is immediate evidence that the results of this model are more accurate than OLS. We can see that the coefficient estimate on the percent bachelor’s degree variable is somewhat smaller than before. The standard errors are also different, indicating a different degree of uncertainty in our point estimate than the basic OLS or the spatial error model shows. Turning to our main model selection criteria, the AIC value is lower for the spatial lag model compared to OLS but higher than the AIC in the spatial error model. In sum, the spatial lag model performs better and is preferable to OLS, but the spatial error model is the best performing model overall. For any given research project, authors should present all three models and consider a more advanced spatial regression model to provide further robustness checks and ensure readers that results are consistent across varying model specifications.</p>
+<p>To that end, we present all three models in the same table for ease of analysis:</p>
 
 <table style="text-align:center">
 <caption>
@@ -1407,44 +1463,44 @@ Poverty Rate
 Bachelor’s Degree
 </td>
 <td>
--0.670<sup>***</sup>
+-0.503<sup>***</sup>
 </td>
 <td>
--0.602<sup>***</sup>
+-0.317<sup>***</sup>
 </td>
 <td>
--0.740<sup>***</sup>
+-0.558<sup>***</sup>
 </td>
 <td>
--0.702<sup>***</sup>
+-0.382<sup>***</sup>
 </td>
 <td>
--0.394<sup>***</sup>
+-0.289<sup>***</sup>
 </td>
 <td>
--0.378<sup>***</sup>
+-0.151<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.034)
+(0.027)
 </td>
 <td>
-(0.036)
+(0.039)
+</td>
+<td>
+(0.039)
 </td>
 <td>
 (0.048)
 </td>
 <td>
-(0.050)
+(0.029)
 </td>
 <td>
-(0.038)
-</td>
-<td>
-(0.038)
+(0.036)
 </td>
 </tr>
 <tr>
@@ -1470,17 +1526,17 @@ Labor Force
 <td>
 </td>
 <td>
-0.0004
+-0.335<sup>***</sup>
 </td>
 <td>
 </td>
 <td>
--0.003
+-0.309<sup>***</sup>
 </td>
 <td>
 </td>
 <td>
--0.004
+-0.301<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1489,17 +1545,17 @@ Labor Force
 <td>
 </td>
 <td>
-(0.008)
+(0.045)
 </td>
 <td>
 </td>
 <td>
-(0.007)
+(0.038)
 </td>
 <td>
 </td>
 <td>
-(0.007)
+(0.038)
 </td>
 </tr>
 <tr>
@@ -1525,17 +1581,17 @@ African-American Pop
 <td>
 </td>
 <td>
--0.002
+0.006
 </td>
 <td>
 </td>
 <td>
-0.001
+-0.013
 </td>
 <td>
 </td>
 <td>
--0.001
+0.011
 </td>
 </tr>
 <tr>
@@ -1544,17 +1600,17 @@ African-American Pop
 <td>
 </td>
 <td>
-(0.002)
+(0.015)
 </td>
 <td>
 </td>
 <td>
-(0.002)
+(0.022)
 </td>
 <td>
 </td>
 <td>
-(0.001)
+(0.012)
 </td>
 </tr>
 <tr>
@@ -1580,17 +1636,17 @@ Asian Pop
 <td>
 </td>
 <td>
--0.005<sup>**</sup>
+-0.044
 </td>
 <td>
 </td>
 <td>
-0.001
+0.003
 </td>
 <td>
 </td>
 <td>
--0.002
+-0.012
 </td>
 </tr>
 <tr>
@@ -1599,17 +1655,17 @@ Asian Pop
 <td>
 </td>
 <td>
-(0.002)
+(0.031)
 </td>
 <td>
 </td>
 <td>
-(0.002)
+(0.037)
 </td>
 <td>
 </td>
 <td>
-(0.002)
+(0.026)
 </td>
 </tr>
 <tr>
@@ -1635,17 +1691,17 @@ Hispanic Pop
 <td>
 </td>
 <td>
-0.025<sup>***</sup>
+0.188<sup>***</sup>
 </td>
 <td>
 </td>
 <td>
-0.010<sup>***</sup>
+0.113<sup>***</sup>
 </td>
 <td>
 </td>
 <td>
-0.016<sup>***</sup>
+0.115<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1654,17 +1710,17 @@ Hispanic Pop
 <td>
 </td>
 <td>
-(0.003)
+(0.023)
 </td>
 <td>
 </td>
 <td>
-(0.003)
+(0.031)
 </td>
 <td>
 </td>
 <td>
-(0.003)
+(0.020)
 </td>
 </tr>
 <tr>
@@ -1688,22 +1744,22 @@ Hispanic Pop
 Constant
 </td>
 <td>
-0.329<sup>***</sup>
+0.311<sup>***</sup>
 </td>
 <td>
-0.216<sup>***</sup>
+0.455<sup>***</sup>
 </td>
 <td>
-0.343<sup>***</sup>
+0.325<sup>***</sup>
 </td>
 <td>
-0.301<sup>***</sup>
+0.470<sup>***</sup>
 </td>
 <td>
-0.160<sup>***</sup>
+0.145<sup>***</sup>
 </td>
 <td>
-0.125<sup>***</sup>
+0.295<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1713,19 +1769,19 @@ Constant
 (0.007)
 </td>
 <td>
-(0.052)
+(0.024)
 </td>
 <td>
 (0.012)
 </td>
 <td>
-(0.045)
+(0.027)
 </td>
 <td>
-(0.014)
+(0.013)
 </td>
 <td>
-(0.046)
+(0.024)
 </td>
 </tr>
 <tr>
@@ -1776,10 +1832,10 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.339
+0.312
 </td>
 <td>
-0.401
+0.413
 </td>
 <td>
 </td>
@@ -1795,10 +1851,10 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.338
+0.311
 </td>
 <td>
-0.397
+0.409
 </td>
 <td>
 </td>
@@ -1818,16 +1874,16 @@ Log Likelihood
 <td>
 </td>
 <td>
-768.430
+757.835
 </td>
 <td>
-775.380
+795.116
 </td>
 <td>
-738.477
+730.279
 </td>
 <td>
-756.824
+774.156
 </td>
 </tr>
 <tr>
@@ -1842,7 +1898,7 @@ sigma<sup>2</sup>
 0.007
 </td>
 <td>
-0.007
+0.006
 </td>
 <td>
 0.008
@@ -1856,20 +1912,22 @@ sigma<sup>2</sup>
 Akaike Inf. Crit.
 </td>
 <td>
+-1,223.201
 </td>
 <td>
+-1,334.482
 </td>
 <td>
--1,528.860
+-1,507.669
 </td>
 <td>
--1,534.759
+-1,574.233
 </td>
 <td>
--1,468.953
+-1,452.557
 </td>
 <td>
--1,497.648
+-1,532.311
 </td>
 </tr>
 <tr>
@@ -1877,10 +1935,10 @@ Akaike Inf. Crit.
 Residual Std. Error
 </td>
 <td>
-0.105 (df = 747)
+0.107 (df = 747)
 </td>
 <td>
-0.100 (df = 743)
+0.099 (df = 743)
 </td>
 <td>
 </td>
@@ -1896,10 +1954,10 @@ Residual Std. Error
 F Statistic
 </td>
 <td>
-383.002<sup>***</sup> (df = 1; 747)
+338.568<sup>***</sup> (df = 1; 747)
 </td>
 <td>
-99.440<sup>***</sup> (df = 5; 743)
+104.632<sup>***</sup> (df = 5; 743)
 </td>
 <td>
 </td>
@@ -1919,16 +1977,16 @@ Wald Test (df = 1)
 <td>
 </td>
 <td>
-346.893<sup>***</sup>
+361.098<sup>***</sup>
 </td>
 <td>
-298.453<sup>***</sup>
+315.985<sup>***</sup>
 </td>
 <td>
-242.443<sup>***</sup>
+262.827<sup>***</sup>
 </td>
 <td>
-197.383<sup>***</sup>
+232.916<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1940,16 +1998,16 @@ LR Test (df = 1)
 <td>
 </td>
 <td>
-277.613<sup>***</sup>
+286.468<sup>***</sup>
 </td>
 <td>
-217.793<sup>***</sup>
+241.751<sup>***</sup>
 </td>
 <td>
-217.706<sup>***</sup>
+231.356<sup>***</sup>
 </td>
 <td>
-180.682<sup>***</sup>
+199.830<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -1969,62 +2027,54 @@ LR Test (df = 1)
 </section>
 <section id="geographically-weighted-regression" class="level2">
 <h2 class="anchored" data-anchor-id="geographically-weighted-regression">Geographically Weighted Regression</h2>
-<p>Following our discussion of the two main workhorse models of spatial regression, the spatial error and the spatial lag models, we talked about several more advanced techniques to estimate spatial relationships that contain a high degree of spatial autocorrelation or have heterogeneity (LISA) in their spatial autocorrelation. We now end our applied section with showing how to implement one of the most common and poweful of the more advanced models: the GWR model. We start by estimating a geographically weighted regression model, compare its performance to the above models, and visualize the results. <code>library(GWmodel)</code> in tandem with <code>library(spdep)</code> provides the tools needed to estimate a geographically weighted regression model. We first need to remove all NAs from the dataset to accurately calculate the weights.</p>
+<p>Following our discussion of the two main workhorse models of spatial regression, the spatial error and the spatial lag models, we talked about several more advanced techniques to estimate spatial relationships that contain a high degree of spatial autocorrelation or have heterogeneity (LISA) in their spatial autocorrelation. We now end our applied section with showing how to implement one of the most common and powerful of the more advanced models: the GWR model. We start by estimating a geographically weighted regression model, compare its performance to the above models, and visualize the results. <code>library(GWmodel)</code> in tandem with <code>library(spdep)</code> provides the tools needed to estimate a geographically weighted regression model. We first need to remove all NAs from the dataset to accurately calculate the weights.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove all the NAs in the dataset</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>brook_shape_no_na <span class="ot">&lt;-</span> brook_shape <span class="sc">%&gt;%</span> </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove all the NAs in the dataset</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>brook_shape_no_na <span class="ot">&lt;-</span> brook_shape <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now that we have removed the NAs, we can calculate the weights for each unit. Remember: GWR models run separate regressions for each spatial unit.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate an optimal bandwidth</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> GWmodel<span class="sc">::</span><span class="fu">bw.gwr</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin),</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> brook_shape_no_na <span class="sc">%&gt;%</span> </span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                           sf<span class="sc">::</span><span class="fu">as_Spatial</span>(), </span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">approach =</span> <span class="st">'AICc'</span>, <span class="at">kernel =</span> <span class="st">'bisquare'</span>, </span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">adaptive =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate an optimal bandwidth</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> GWmodel<span class="sc">::</span><span class="fu">bw.gwr</span>(poverty_rate<span class="sc">~</span>bach_rate <span class="sc">+</span> lab_force_rate <span class="sc">+</span>  per_aa <span class="sc">+</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                           per_asian <span class="sc">+</span> per_his, <span class="at">data =</span> brook_shape_no_na <span class="sc">%&gt;%</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                           sf<span class="sc">::</span><span class="fu">as_Spatial</span>(), <span class="at">approach =</span> <span class="st">'AICc'</span>, <span class="at">kernel =</span> <span class="st">'bisquare'</span>, </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">adaptive =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Adaptive bandwidth (number of nearest neighbours): 470 AICc value: -1481.673 
-Adaptive bandwidth (number of nearest neighbours): 298 AICc value: -1565.594 
-Adaptive bandwidth (number of nearest neighbours): 191 AICc value: -1621.487 
-Adaptive bandwidth (number of nearest neighbours): 125 AICc value: -1658.369 
-Adaptive bandwidth (number of nearest neighbours): 84 AICc value: -1666.586 
-Adaptive bandwidth (number of nearest neighbours): 59 AICc value: -1639.162 
-Adaptive bandwidth (number of nearest neighbours): 100 AICc value: -1667.002 
-Adaptive bandwidth (number of nearest neighbours): 109 AICc value: -1663.021 
-Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 
-Adaptive bandwidth (number of nearest neighbours): 90 AICc value: -1668.185 
-Adaptive bandwidth (number of nearest neighbours): 96 AICc value: -1666.886 
-Adaptive bandwidth (number of nearest neighbours): 92 AICc value: -1668.245 
-Adaptive bandwidth (number of nearest neighbours): 94 AICc value: -1667.665 
-Adaptive bandwidth (number of nearest neighbours): 92 AICc value: -1668.245 
-Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 </code></pre>
+<pre><code>Adaptive bandwidth (number of nearest neighbours): 470 AICc value: -1597.422 
+Adaptive bandwidth (number of nearest neighbours): 298 AICc value: -1675.456 
+Adaptive bandwidth (number of nearest neighbours): 191 AICc value: -1741.217 
+Adaptive bandwidth (number of nearest neighbours): 125 AICc value: -1777.614 
+Adaptive bandwidth (number of nearest neighbours): 84 AICc value: -1784.89 
+Adaptive bandwidth (number of nearest neighbours): 59 AICc value: -1774.615 
+Adaptive bandwidth (number of nearest neighbours): 100 AICc value: -1783.689 
+Adaptive bandwidth (number of nearest neighbours): 74 AICc value: -1785.406 
+Adaptive bandwidth (number of nearest neighbours): 68 AICc value: -1782.317 
+Adaptive bandwidth (number of nearest neighbours): 78 AICc value: -1786.698 
+Adaptive bandwidth (number of nearest neighbours): 80 AICc value: -1786.662 
+Adaptive bandwidth (number of nearest neighbours): 76 AICc value: -1785.882 
+Adaptive bandwidth (number of nearest neighbours): 78 AICc value: -1786.698 </code></pre>
 </div>
 </div>
 <p>Now that we have the weights calculated, we can run the main GWR model. The code to run the model and display the results is below. Unfortunately, we cannot use <code>library(stargazer)</code> to create a nicely formatted table for GWR models due to the nature and complexity of the output.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gwr_model <span class="ot">&lt;-</span> GWmodel<span class="sc">::</span><span class="fu">gwr.basic</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin),</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                                <span class="at">data =</span> brook_shape_no_na <span class="sc">%&gt;%</span> </span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                                sf<span class="sc">::</span><span class="fu">as_Spatial</span>(), </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bw =</span> weights, <span class="at">kernel =</span> <span class="st">"bisquare"</span>, <span class="at">adaptive =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gwr_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>gwr_model <span class="ot">&lt;-</span> GWmodel<span class="sc">::</span><span class="fu">gwr.basic</span>(poverty_rate<span class="sc">~</span>bach_rate <span class="sc">+</span> lab_force_rate <span class="sc">+</span>  per_aa <span class="sc">+</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                                per_asian <span class="sc">+</span> per_his, <span class="at">data =</span> brook_shape_no_na <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                                sf<span class="sc">::</span><span class="fu">as_Spatial</span>(), </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bw =</span> weights, <span class="at">kernel =</span> <span class="st">"bisquare"</span>, <span class="at">adaptive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gwr_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   ***********************************************************************
    *                       Package   GWmodel                             *
    ***********************************************************************
-   Program starts at: 2022-12-12 15:58:33 
+   Program starts at: 2022-12-12 17:22:41 
    Call:
-   GWmodel::gwr.basic(formula = poverty_rate ~ log(1 + bach_rate) + 
-    log(1 + popinlabou) + log(1 + africaninl) + log(1 + asianinlab) + 
-    log(1 + hispanicin), data = brook_shape_no_na %&gt;% sf::as_Spatial(), 
-    bw = weights, kernel = "bisquare", adaptive = TRUE)
+   GWmodel::gwr.basic(formula = poverty_rate ~ bach_rate + lab_force_rate + 
+    per_aa + per_asian + per_his, data = brook_shape_no_na %&gt;% 
+    sf::as_Spatial(), bw = weights, kernel = "bisquare", adaptive = TRUE)
 
    Dependent (y) variable:  poverty_rate
-   Independent variables:  bach_rate popinlabou africaninl asianinlab hispanicin
+   Independent variables:  bach_rate lab_force_rate per_aa per_asian per_his
    Number of data points: 749
    ***********************************************************************
    *                    Results of Global Regression                     *
@@ -2035,60 +2085,60 @@ Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 </co
 
    Residuals:
      Min       1Q   Median       3Q      Max 
--0.21076 -0.07050 -0.00425  0.05426  0.38188 
+-0.51295 -0.06971 -0.00265  0.05214  0.37647 
 
    Coefficients:
-                         Estimate Std. Error t value Pr(&gt;|t|)    
-   (Intercept)          0.2155755  0.0521394   4.135 3.96e-05 ***
-   log(1 + bach_rate)  -0.6015869  0.0360114 -16.705  &lt; 2e-16 ***
-   log(1 + popinlabou)  0.0003792  0.0084544   0.045   0.9642    
-   log(1 + africaninl) -0.0021506  0.0017472  -1.231   0.2187    
-   log(1 + asianinlab) -0.0053706  0.0020896  -2.570   0.0104 *  
-   log(1 + hispanicin)  0.0254460  0.0031623   8.047 3.37e-15 ***
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+   (Intercept)     0.455176   0.024461  18.608  &lt; 2e-16 ***
+   bach_rate      -0.316727   0.038809  -8.161 1.42e-15 ***
+   lab_force_rate -0.335159   0.044593  -7.516 1.63e-13 ***
+   per_aa          0.006344   0.014649   0.433    0.665    
+   per_asian      -0.043835   0.030937  -1.417    0.157    
+   per_his         0.188254   0.022958   8.200 1.06e-15 ***
 
    ---Significance stars
    Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
-   Residual standard error: 0.09978 on 743 degrees of freedom
-   Multiple R-squared: 0.4009
-   Adjusted R-squared: 0.3969 
-   F-statistic: 99.44 on 5 and 743 DF,  p-value: &lt; 2.2e-16 
+   Residual standard error: 0.09876 on 743 degrees of freedom
+   Multiple R-squared: 0.4132
+   Adjusted R-squared: 0.4092 
+   F-statistic: 104.6 on 5 and 743 DF,  p-value: &lt; 2.2e-16 
    ***Extra Diagnostic information
-   Residual sum of squares: 7.397933
-   Sigma(hat): 0.09951646
-   AIC:  -1318.966
-   AICc:  -1318.815
-   BIC:  -1989.304
+   Residual sum of squares: 7.246263
+   Sigma(hat): 0.09849104
+   AIC:  -1334.482
+   AICc:  -1334.331
+   BIC:  -2004.819
    ***********************************************************************
    *          Results of Geographically Weighted Regression              *
    ***********************************************************************
 
    *********************Model calibration information*********************
    Kernel function: bisquare 
-   Adaptive bandwidth: 93 (number of nearest neighbours)
+   Adaptive bandwidth: 78 (number of nearest neighbours)
    Regression points: the same locations as observations are used.
    Distance metric: Euclidean distance metric is used.
 
    ****************Summary of GWR coefficient estimates:******************
-                             Min.    1st Qu.     Median    3rd Qu.   Max.
-   Intercept           -0.3718597  0.1125074  0.2935530  0.4912229 1.1779
-   log(1 + bach_rate)  -2.4709224 -1.1641975 -0.8129934 -0.5343122 0.5593
-   log(1 + popinlabou) -0.2539616 -0.0165205  0.0190715  0.0456808 0.3136
-   log(1 + africaninl) -0.3245012 -0.0152142 -0.0010035  0.0120940 0.1672
-   log(1 + asianinlab) -0.0266489 -0.0030611  0.0015387  0.0068593 0.0312
-   log(1 + hispanicin) -0.0663042 -0.0066083  0.0064852  0.0169869 0.0639
+                       Min.   1st Qu.    Median   3rd Qu.   Max.
+   Intercept       0.031866  0.344127  0.466875  0.629291 1.4226
+   bach_rate      -2.068998 -0.809901 -0.577730 -0.157502 0.4963
+   lab_force_rate -0.993951 -0.518528 -0.358029 -0.220822 0.3116
+   per_aa         -0.774861 -0.131914  0.009038  0.206192 0.8688
+   per_asian      -0.670599 -0.065272  0.073219  0.248370 1.1811
+   per_his        -0.649584 -0.076310  0.151980  0.340791 0.7948
    ************************Diagnostic information*************************
    Number of data points: 749 
-   Effective number of parameters (2trace(S) - trace(S'S)): 141.6189 
-   Effective degrees of freedom (n-2trace(S) + trace(S'S)): 607.3811 
-   AICc (GWR book, Fotheringham, et al. 2002, p. 61, eq 2.33): -1668.509 
-   AIC (GWR book, Fotheringham, et al. 2002,GWR p. 96, eq. 4.22): -1815.489 
-   BIC (GWR book, Fotheringham, et al. 2002,GWR p. 61, eq. 2.34): -1959.431 
-   Residual sum of squares: 3.364251 
-   R-square value:  0.7275574 
-   Adjusted R-square value:  0.6639291 
+   Effective number of parameters (2trace(S) - trace(S'S)): 159.9831 
+   Effective degrees of freedom (n-2trace(S) + trace(S'S)): 589.0169 
+   AICc (GWR book, Fotheringham, et al. 2002, p. 61, eq 2.33): -1786.698 
+   AIC (GWR book, Fotheringham, et al. 2002,GWR p. 96, eq. 4.22): -1959.338 
+   BIC (GWR book, Fotheringham, et al. 2002,GWR p. 61, eq. 2.34): -2023.354 
+   Residual sum of squares: 2.724157 
+   R-square value:  0.7793932 
+   Adjusted R-square value:  0.7193722 
 
    ***********************************************************************
-   Program stops at: 2022-12-12 15:58:34 </code></pre>
+   Program stops at: 2022-12-12 17:22:41 </code></pre>
 </div>
 </div>
 <p>The output, shown above, gives a wealth of information about regression results, goodness-of-fit metrics, and meta information about the estimation procedure. Let’s go over some of it now. We see first the results of the global regression and below, in the second section, we see the results of the GWR. Importantly, the GWR output gives us a range of coefficient estimates since we have conducted an individual regression model for each census tract. The results that we see in the second table are actually more like descriptive statistics of the distribution of estimated coefficients and other regression result metrics. We can also see the more meta information of our GWR models such as the adaptive bandwidth, the kernel function, and the distance metric. We have left all of these values default as suggested by Fotheringham et al.&nbsp;(2002) &amp; Goovaerts (2008).</p>
@@ -2098,48 +2148,48 @@ Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 </co
 <h2 class="anchored" data-anchor-id="mapping-geographically-weighted-regression-results">Mapping Geographically Weighted Regression Results</h2>
 <p>GWR models offer a key benefit in unit level metrics that allow us to evaluate and visualize our model results on a localized level. Accordingly, an important and powerful aspect of <code>library(GWmodel)</code> is the ability to easily visualize results for each spatial unit. We first need to process our model results into a form that can extract coefficients, standard errors, goodness-of-fit, and other metrics from our GWR model. Specifically, <code>spplot()</code> cannot recognize the names of our variables resulting from the GWR model estimation (DGES 2022), so we need to change the names, which the following code does.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Processing GWR model for visualization</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>gwr_proc_data <span class="ot">&lt;-</span> gwr_model<span class="sc">$</span>SDF<span class="sc">@</span>data</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Changing Bachelor's Degree Variable Name</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>coefbach <span class="ot">&lt;-</span> gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">log(1 + bach_rate)</span><span class="st">`</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Calculating p-values</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>bachp <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">log(1 + bach_rate)_TV</span><span class="st">`</span>), </span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                            <span class="at">df =</span> <span class="fu">dim</span>(gwr_proc_data)[<span class="dv">1</span>] <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Creating a standard error variable</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>sebach <span class="ot">&lt;-</span> gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">log(1 + bach_rate)_SE</span><span class="st">`</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Finalizing the preprocessing</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>processed_gwr_results <span class="ot">&lt;-</span> gwr_model<span class="sc">$</span>SDF</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>processed_gwr_results<span class="sc">@</span>data <span class="ot">&lt;-</span> gwr_proc_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Processing GWR model for visualization</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>gwr_proc_data <span class="ot">&lt;-</span> gwr_model<span class="sc">$</span>SDF<span class="sc">@</span>data</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Changing Bachelor's Degree Variable Name</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>coefbach <span class="ot">&lt;-</span> gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">bach_rate</span><span class="st">`</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Calculating p-values</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>bachp <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">bach_rate_TV</span><span class="st">`</span>), </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                            <span class="at">df =</span> <span class="fu">dim</span>(gwr_proc_data)[<span class="dv">1</span>] <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Creating a standard error variable</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>sebach <span class="ot">&lt;-</span> gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">bach_rate_SE</span><span class="st">`</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Finalizing the preprocessing</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>processed_gwr_results <span class="ot">&lt;-</span> gwr_model<span class="sc">$</span>SDF</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>processed_gwr_results<span class="sc">@</span>data <span class="ot">&lt;-</span> gwr_proc_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now that we have the data processed, we end this section with the visualization of the GWR model results. Since we have estimated a series of regression models, we have resulting metrics for every single census tract. We can use this information to create maps. Perhaps one of the richest ways to visualize heterogeneity in spatial autocorrelation is with the following plots that visualize the distributions of our key model results across each census tract in Brooklyn. Visualizing the GWR model results in this fashion is an incredibly powerful technique to show how deleterious spatial autocorrelation can be and to show what localized spatial autocorrelation looks like. We start with mapping localized <span class="math inline">\(R^2\)</span> values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"Local_R2"</span>, <span class="at">main=</span><span class="st">"Local Pseudo R Squared Values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"Local_R2"</span>, <span class="at">main=</span><span class="st">"Local Pseudo R Squared Values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20r2-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Mapping the pseudo <span class="math inline">\(R^2\)</span> values for each census tract shows the heterogeneity in model fit depending on the tract. This adds a level of richness to our understanding of our models because we know that our model specification performs better when estimating the effect of college education rates on poverty rates in some census tracts compared to others.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"coefbach"</span>, <span class="at">main=</span><span class="st">"Bachelor's Degree Estimated Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"coefbach"</span>, <span class="at">main=</span><span class="st">"Bachelor's Degree Estimated Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20coef-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>The map of estimated coefficients above shows where the effect of college education rates on poverty rates, controlling for all other factors in the model, is the highest and lowest. While our overall coefficient estimate is negative, we can see a cluster in central Brooklyn where the estimated coefficient is positive. This tells us that bachelor’s degree attainment does not always lead to lower levels of poverty and its effect is heterogeneous across spatial units. We can also further see clustering of high and low coefficients in different locations around the borough.</p>
+<p>The map of estimated coefficients above shows where the effect of college education rates on poverty rates, controlling for all other factors in the model, is the highest and lowest. While our overall coefficient estimate is negative, we can see a cluster in southern Brooklyn where the estimated coefficient is positive. This tells us that bachelor’s degree attainment does not always lead to lower levels of poverty and its effect is heterogeneous across spatial units. We can also further see clustering of high and low coefficients in different locations around the borough.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"sebach"</span>, <span class="at">main=</span><span class="st">"Standard Error of Bachelor's Degree Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"sebach"</span>, <span class="at">main=</span><span class="st">"Standard Error of Bachelor's Degree Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20se-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This third map shows the distribution of standard errors across census tracts. We see the lowest standard errors on the entire west side of Brooklyn with the highest standard errors in the northeastern parts of the borough. We can use this map to visualize the distribution of our uncertainty in our estimated coefficients and see where the confidence intervals will be the highest and the lowest. In other words, this is a map of our uncertainty concerning our estimated coefficients.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"bachp"</span>, <span class="at">main=</span><span class="st">"p-value of Bachelor's Degree Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"bachp"</span>, <span class="at">main=</span><span class="st">"p-value of Bachelor's Degree Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20p-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Finally, we map the distribution of <span class="math inline">\(p\)</span>-values. We can see extremely low <span class="math inline">\(p\)</span>-values, indicating statistical significance, across the majority of the borough with only a small cluster of census tracts where the rate of college education was not a statistically significant predictor of poverty rates.</p>
+<p>Finally, we map the distribution of <span class="math inline">\(p\)</span>-values. We can see extremely low <span class="math inline">\(p\)</span>-values, indicating statistical significance, across the majority of the borough with only a small cluster of census tracts where the rate of college education was not a statistically significant predictor of poverty rates. In some census tracts, the <span class="math inline">\(p\)</span>-value is near 1!</p>
 <p>It is an extremely good idea to create these visualizations whenever we run a GWR model so that we can better characterize the full distribution of our model results. Since GWR runs many models, only looking at averaged metrics loses the richness that makes GWR models valuable to researchers.</p>
 </section>
 <section id="concluding-remarks" class="level2">
