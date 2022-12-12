@@ -203,7 +203,7 @@ brook_nb <- brook_shape %>%
 
 Now with the weights created, we can estimate a spatial error model with `errorsarlm()`. We estimate both a simple and multiple regression model with the same control variables that are included above in the OLS model. There are some additional arguments beyond what is required for an OLS models to properly use `errorsarlm()`. The weights must be included, which we named brook_nb, we need to specify `zero.policy=TRUE` which allows weights to equal zero, and omit NAs. The spatial error model is:
 
-$$poverty{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}\\ \nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i$$
+$$poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}\\ \nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i$$
 The following code estimates the model: 
 
 ```{r err models}
