@@ -2,17 +2,17 @@
 
 - Anselin, Luc. 1995. Local Indicators of Spatial Association — LISA. Geographical Analysis 27: 93–115.
 
-- Anselin, Luc. 2020. Local Spatial Autocorrelation. GeoDa. https://geodacenter.github.io/workbook/6a_local_auto/lab6a.html#fn1
+- Anselin, Luc. 2020. Local Spatial Autocorrelation. GeoDa.[Link](https://geodacenter.github.io/workbook/6a_local_auto/lab6a.html#fn1)
 
 - Bailey, Michael A. 2021. Real Statistics. 2nd edition. Oxford University Press.
 
 - Bivand R, Pebesma EJ, Gómez-Rubio V. 2008. Applied spatial data analysis using R. Heidelberg: Springer.
 
-- Darmofal, David. 2006. Spatial Econometrics and Political Science. https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=8c16dd4a68aa1725518b4d6a9d02321fbc91ce4c
+- Darmofal, David. 2006. Spatial Econometrics and Political Science.[Link](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=8c16dd4a68aa1725518b4d6a9d02321fbc91ce4c)
 
 - Darmofal, David. 2015. Spatial Analysis for the Social Sciences. Cambridge University Press.
 
-- Eilers, Lea. 2019. Spatial Autocorrelation and the Spatial Durbin Model. Robust Workshop Lecture Slides. https://rural-urban.eu/sites/default/files/05_Spatial%20Autocorrelation%20and%20the%20Spatial%20Durbin%20Model_Eilers.pdf
+- Eilers, Lea. 2019. Spatial Autocorrelation and the Spatial Durbin Model. Robust Workshop Lecture Slides. [Link](https://rural-urban.eu/sites/default/files/05_Spatial%20Autocorrelation%20and%20the%20Spatial%20Durbin%20Model_Eilers.pdf)
 
 - Fotheringham AS, Brundson C, and Charlton M. 2002. Geographically weighted regression: The analysis of spatially varying relationships. West Sussex, England: John Wiley and Sons, Ltd.
 
@@ -22,7 +22,7 @@
 
 - Greene, William H. 2018. Econometric Analysis. 8th edition. Pearson Education.
 
-- Hurtado, Carlos. 2016. Stationary, Homoscedastic, and Cross-Sectional Spatial Models. Lecture Slides http://www.econ.uiuc.edu/~hrtdmrt2/Teaching/SE_2016_19/L5/L5_SARAR.pdf
+- Hurtado, Carlos. 2016. Stationary, Homoscedastic, and Cross-Sectional Spatial Models. Lecture Slides. [Link](http://www.econ.uiuc.edu/~hrtdmrt2/Teaching/SE_2016_19/L5/L5_SARAR.pdf)
 
 - Jin, Fei and Lung-fei Lee. 2013. Generalized Spatial Two Stage Least Squares Estimation of Spatial Autoregressive Models with Autoregressive Disturbances in the Presence of Endogenous Regressors and Many Instruments. Econometrics. 1(1), 71-114
 
@@ -48,28 +48,28 @@
 
 ## Appendix
 
-In this section, readers can find additional guides that informed this project and a brief overview of the political science and economics literature that is using spatial regression methods.
+In this brief appendix, readers can find additional guides that informed this project and a brief overview of the political science literature that is using spatial regression methods.
 
 **For more resources that guided this project:**
 
 - Geographically Weighted Regression
-  - https://www.publichealth.columbia.edu/research/population-health-methods/geographically-weighted-regression
+  - [https://www.publichealth.columbia.edu/research/population-health-methods/geographically-weighted-regression](https://www.publichealth.columbia.edu/research/population-health-methods/geographically-weighted-regression)
   
 - Raster & Point Data
-  - https://rspatial.org/raster/analysis/8-pointpat.html
+  - [https://rspatial.org/raster/analysis/8-pointpat.html](https://rspatial.org/raster/analysis/8-pointpat.html)
   
 - Spatial Data Analysis and Visualization with R (cited as DGES)
-  - http://www.geo.hunter.cuny.edu/~ssun/R-Spatial/
+  - [http://www.geo.hunter.cuny.edu/~ssun/R-Spatial/](http://www.geo.hunter.cuny.edu/~ssun/R-Spatial/)
 
-- Spatial Simulation Example
-  - http://gis.humboldt.edu/OLM/r/Spatial%20Analysis%20With%20R.pdf
-  - https://rpubs.com/jguelat/autocorr
+- Spatial Simulation Examples
+  - [http://gis.humboldt.edu/OLM/r/Spatial%20Analysis%20With%20R.pdf](http://gis.humboldt.edu/OLM/r/Spatial%20Analysis%20With%20R.pdf)
+  - [https://rpubs.com/jguelat/autocorr](https://rpubs.com/jguelat/autocorr)
   
 - Spatial Autocorrelation
-  - https://www.r-bloggers.com/2019/07/exploring-spatial-autocorrelation-in-r/
+  - [https://www.r-bloggers.com/2019/07/exploring-spatial-autocorrelation-in-r/](https://www.r-bloggers.com/2019/07/exploring-spatial-autocorrelation-in-r/)
   
 - Spatial Weighting
-  - https://rpubs.com/erikaaldisa/spatialweights
+  - [https://rpubs.com/erikaaldisa/spatialweights](https://rpubs.com/erikaaldisa/spatialweights)
 
 **An Overview of How Spatial Modeling is Applied in Political Science**
 
