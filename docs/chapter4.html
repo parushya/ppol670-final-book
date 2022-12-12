@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Spatial Regression - Poverty &amp; Education in Brooklyn, New York</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./chapter3.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Poverty &amp; Education in Brooklyn, New York</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Spatial Regression</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter1.html" class="sidebar-item-text sidebar-link">Basics of Geospatial Data</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter2.html" class="sidebar-item-text sidebar-link">Spatial Autocorrelation</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter3.html" class="sidebar-item-text sidebar-link">Modeling Spatial Relationships</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter4.html" class="sidebar-item-text sidebar-link active">Poverty &amp; Education in Brooklyn, New York</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#exploratory-spatial-data-analysis" id="toc-exploratory-spatial-data-analysis" class="nav-link active" data-scroll-target="#exploratory-spatial-data-analysis">Exploratory Spatial Data Analysis</a></li>
+  <li><a href="#applied-detection-of-spatial-autocorrelation" id="toc-applied-detection-of-spatial-autocorrelation" class="nav-link" data-scroll-target="#applied-detection-of-spatial-autocorrelation">Applied Detection of Spatial Autocorrelation</a></li>
+  <li><a href="#ols-results" id="toc-ols-results" class="nav-link" data-scroll-target="#ols-results">OLS Results</a></li>
+  <li><a href="#spatial-error-results" id="toc-spatial-error-results" class="nav-link" data-scroll-target="#spatial-error-results">Spatial Error Results</a></li>
+  <li><a href="#spatial-lag-results" id="toc-spatial-lag-results" class="nav-link" data-scroll-target="#spatial-lag-results">Spatial Lag Results</a></li>
+  <li><a href="#geographically-weighted-regression" id="toc-geographically-weighted-regression" class="nav-link" data-scroll-target="#geographically-weighted-regression">Geographically Weighted Regression</a></li>
+  <li><a href="#mapping-geographically-weighted-regression-results" id="toc-mapping-geographically-weighted-regression-results" class="nav-link" data-scroll-target="#mapping-geographically-weighted-regression-results">Mapping Geographically Weighted Regression Results</a></li>
+  <li><a href="#concluding-remarks" id="toc-concluding-remarks" class="nav-link" data-scroll-target="#concluding-remarks">Concluding Remarks</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Poverty &amp; Education in Brooklyn, New York</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+
+</div>
+<p>Up until now, we have not worked with applied data. We have only presented theory, equations, and <em>R</em> commands much like a “cookbook.” This chapter presents a self-contained systematic step-by-step analysis of the influence of college education rates on poverty in order to showcase each step of the spatial analysis process. We return to our maps from the first chapter to predict the type of spatial autocorrelation we should expect; use Moran’s <span class="math inline">\(I\)</span> and LISA methods to detect global and local spatial autocorrelation; run several different spatial models and use goodness-of-fit metrics to select the “best” approach; display the model results alongside OLS results; and include a series of additional maps that better illustrate each concept mentioned throughout this short book. By the end of this chapter, readers will be completely comfortable implementing spatial regression models, interpreting their output, visualizing their results, and undertaking a complete spatial analysis.</p>
+<section id="exploratory-spatial-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-spatial-data-analysis">Exploratory Spatial Data Analysis</h2>
+<p>Recall that we are motivated by the question of whether or not a college education can lift people out of poverty. We started our analysis by mapping our variables of interest. These maps can be found below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Redisplaying the Maps</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="sc">+</span> m2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter4_files/figure-html/redisplaying%20maps-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>To recap what we covered in the introduction, these maps depict the distribution of poverty and college educated residents across Brooklyn. The maps provide insights into the areas of Brooklyn that are higher educated and the areas that are struggling economically. We can see that the high values of poverty rates and the high rates of bachelor degree holders are clustered in different parts of the city. The maps appear to be almost flipped images of one another with the high poverty areas being the low educational attainment areas, and vice versa. This clsutering is conjectural evidence in support of positive autocorrelation. While there is certainly contextual evidence that there exists a relationship between education and poverty, as social scientists, we are interested in concrete evidence. To conduct a more rigorous analysis of the relationship between poverty and college education, we should implement some form of regression model, but first we should run tests for spatial autocorrelation.</p>
+</section>
+<section id="applied-detection-of-spatial-autocorrelation" class="level2">
+<h2 class="anchored" data-anchor-id="applied-detection-of-spatial-autocorrelation">Applied Detection of Spatial Autocorrelation</h2>
+<p>Whenever we are working with spatial data, we should run some tests for spatial autocorrelation to make sure that our errors are uncorrelated, so that we can be more confident that we are not violating the Gauss-Markov assumptions. We can implement a test for global spatial autocorrelation with Moran’s <span class="math inline">\(I\)</span>. The code is given below:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Moran' I test</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Testing for Global Autocorrelation</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>brook_shape <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">poly2nb</span>(<span class="fu">c</span>(<span class="st">'cartodb_id'</span>)) <span class="sc">%&gt;%</span> <span class="do">## identifying spatial units for the weight matrix</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nb2listw</span>(<span class="at">zero.policy =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="do">## allowing distant weights to be zero</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">moran.test</span>(brook_shape<span class="sc">$</span>poverty_rate, ., <span class="at">zero.policy =</span> <span class="cn">TRUE</span>) <span class="do">## running moran test</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  brook_shape$poverty_rate  
+weights: .    
+
+Moran I statistic standard deviate = 24.778, p-value &lt; 2.2e-16
+alternative hypothesis: greater
+sample estimates:
+Moran I statistic       Expectation          Variance 
+     0.5254679040     -0.0013368984      0.0004520155 </code></pre>
+</div>
+</div>
+<p>The result is a large positive <span class="math inline">\(I\)</span> and an extremely small <span class="math inline">\(p\)</span>-value, leading us to reject the null hypothesis that there is no spatial autocorrelation in poverty rates. The large and positive value of <span class="math inline">\(I\)</span> indicates positive autocorrelation. We can conduct the same test for our main independent variable: percent with bachelor’s degree.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Moran' I test</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Testing for Global Autocorrelation</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>brook_shape <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">poly2nb</span>(<span class="fu">c</span>(<span class="st">'cartodb_id'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nb2listw</span>(<span class="at">zero.policy =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">moran.test</span>(brook_shape<span class="sc">$</span>bach_rate, ., <span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  brook_shape$bach_rate  
+weights: .    
+
+Moran I statistic standard deviate = 35.912, p-value &lt; 2.2e-16
+alternative hypothesis: greater
+sample estimates:
+Moran I statistic       Expectation          Variance 
+     0.7617824779     -0.0013368984      0.0004515575 </code></pre>
+</div>
+</div>
+<p>Moran’s <span class="math inline">\(I\)</span> is even larger and more positive for the percent bachelor’s degree variable and the <span class="math inline">\(p\)</span>-value is again extremely small, approaching 0. We can interpret this <span class="math inline">\(p\)</span>-value as the probability that we would have gotten an estimate of spatial autocorrelation this severe if there was, in fact, no spatial autocorrelation.</p>
+<p>Both visually from a close examination of the maps of poverty and college educated residents and formally from a statistical test for spatial autocorrelation, we can see evidence that our variables of interest exhibit spatial autocorrelation.</p>
+<p>Another tool that we can use to illustrate spatial autocorrelation is the following scatterplot:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Scatterplot for Spatial Autocorrelation</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>brook_shape <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">poly2nb</span>(<span class="fu">c</span>(<span class="st">'cartodb_id'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nb2listw</span>(<span class="at">zero.policy =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">moran.plot</span>(brook_shape<span class="sc">$</span>poverty_rate, ., <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="do">## plot command</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">xlab =</span> <span class="st">"Poverty Rate"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylab =</span> <span class="st">"Lagged Neighbors' Poverty Rate"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter4_files/figure-html/example%20morans%20I%20test%20scatterplot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The scatterplot above uses unit, <span class="math inline">\(i\)</span>’s poverty rate to predict <span class="math inline">\(i\)</span>’s neighbor’s poverty rate. If the poverty rate of <span class="math inline">\(i\)</span> is a statistically significant predictor of the poverty rate of <span class="math inline">\(i\)</span>’s neighbors, then we have evidence of spatial autocorrelation. We can see a strong positive relationship in the scatterplot above which is consistent with the results of global Moran’s <span class="math inline">\(I\)</span> test above.</p>
+<p>Now that we have evidence for global autocorrelation, we should also test for local autocorrelation. Our first piece of evidence that our data may exhibit local autocorrelation is the number of observations in the scatterplot above that are clustered. The top-right quadrant indicates a High-High spatial autocorrelation relationship, meaning census tracts with high levels of poverty are clustered nearby with other census tracts with high levels of poverty. We can see that there are other clusters, though smaller in number, present in the other quadrants as well. This indicates some degree of heterogeneity in our spatial autocorrelation. To test for LISA more formally and rigorously, we use <code>localmoran()</code>. First, we calculate the weights for each census tract with the code below. We will also use this code to calculate thenweights needed for spatial regression models and this code contains the same commands we used above for pre-processing our data for global Moran’s <span class="math inline">\(I\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Creating Weights for Spatial Autocorrelation</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>brook_nb <span class="ot">&lt;-</span> brook_shape <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">poly2nb</span>(<span class="fu">c</span>(<span class="st">'cartodb_id'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nb2listw</span>(<span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With the weights calculated, we can estimate local Moran’s <span class="math inline">\(I\)</span> for each census tract in our data with <code>spdep::localmoran()</code>. We also allow weights of neighbors to be 0 by setting <code>zero.policy=TRUE</code> and omit NAs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Local Moran's I</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>lisa <span class="ot">&lt;-</span> spdep<span class="sc">::</span><span class="fu">localmoran</span>(brook_shape<span class="sc">$</span>poverty_rate, brook_nb, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When we run <code>localmoran()</code>, R returns a new dataframe with the same number of rows as the input dataframe, but with five new variables that can be used to detect and characterize the local spatial autocorrelation in our data. The variables and their definitions are explained in the table below that we adapted from this <a href="http://www.geo.hunter.cuny.edu/~ssun/R-Spatial/">guide</a>.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ii</td>
+<td>Local Moran <span class="math inline">\(I\)</span> statistic</td>
+</tr>
+<tr class="even">
+<td>E.Ii</td>
+<td>Expected Value of Local Moran <span class="math inline">\(I\)</span> statistic</td>
+</tr>
+<tr class="odd">
+<td>Var.Ii</td>
+<td>Variance of Local Moran <span class="math inline">\(I\)</span> statistic</td>
+</tr>
+<tr class="even">
+<td>Z.Ii</td>
+<td>Standard deviation of local Moran <span class="math inline">\(I\)</span> statistic</td>
+</tr>
+<tr class="odd">
+<td>Pr(z &gt; 0)</td>
+<td><span class="math inline">\(p\)</span>-value of local Moran statistic</td>
+</tr>
+</tbody>
+</table>
+<p>The goal when analyzing local Moran’s <span class="math inline">\(I\)</span> values is to catalog census tracts depending on if they are a part of a cluster or if they do not have significant local autocorrelation. When <span class="math inline">\(I_i\)</span>, which is Moran’s <span class="math inline">\(I\)</span> for census tract <span class="math inline">\(i\)</span>, is high it means that there is a cluster around the unit that has similar values either low or high. A low <span class="math inline">\(I_i\)</span> means that there is no cluster and a unit is surrounded by values that are not similar. In other words, we can classify each unit as either being a part of a cluster or an outlier depending on the value of <span class="math inline">\(I_i\)</span>. We can further classify each census tract into High-High, High-Low, Low-Low, and Low-High as mentioned previously.</p>
+<p>Before we can run a formal statistical test for local autocorrelation, we first have to choose a confidence level. While we select the <span class="math inline">\(.05\)</span> level because it is customary, this choice is obviously subjective. The following code defines a confidence level and then takes the mean of the poverty rate.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Selecting the confidence level</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>confidence_level <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean of poverty</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>mean_pov <span class="ot">&lt;-</span> <span class="fu">mean</span>(brook_shape<span class="sc">$</span>poverty_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With the confidence level chosen and the mean of our dependent variable calculated, we can find each census tract that has statistically significant local spatial autocorrelation. We calculate the classification of local spatial autocorrelation based on three criteria: the statistical significance as determined by the <span class="math inline">\(p\)</span>-value of the local Moran’s <span class="math inline">\(I\)</span> test; the estimated value of the local <span class="math inline">\(I\)</span>; and whether or not the census tract’s poverty rate is above, below, or equal to the mean poverty rate. We also assign the character value “Not Significant” to the NAs.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Calculating LISA</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>lisa <span class="ot">&lt;-</span> lisa <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_colnames</span>(<span class="fu">c</span>(<span class="st">"Ii"</span>,<span class="st">"E(Ii)"</span>,<span class="st">"Var(Ii)"</span>,<span class="st">"Z_Ii"</span>,<span class="st">"Pr(z &gt; 0)"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lisa_pov =</span> <span class="fu">case_when</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Pr(z &gt; 0)</span><span class="st">`</span> <span class="sc">&gt;</span> <span class="fl">0.05</span> <span class="sc">~</span> <span class="st">"Not significant"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Pr(z &gt; 0)</span><span class="st">`</span> <span class="sc">&lt;=</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> Ii <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> brook_shape<span class="sc">$</span>poverty_rate <span class="sc">&gt;=</span> mean_pov <span class="sc">~</span> <span class="st">"HH"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Pr(z &gt; 0)</span><span class="st">`</span> <span class="sc">&lt;=</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> Ii <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> brook_shape<span class="sc">$</span>poverty_rate <span class="sc">&gt;=</span> mean_pov <span class="sc">~</span> <span class="st">"HL"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Pr(z &gt; 0)</span><span class="st">`</span> <span class="sc">&lt;=</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> Ii <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> brook_shape<span class="sc">$</span>poverty_rate <span class="sc">&lt;</span> mean_pov <span class="sc">~</span> <span class="st">"LL"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Pr(z &gt; 0)</span><span class="st">`</span> <span class="sc">&lt;=</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> Ii <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> brook_shape<span class="sc">$</span>poverty_rate <span class="sc">&lt;</span> mean_pov <span class="sc">~</span> <span class="st">"LH"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining Type to Spatial Data</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>brook_shape<span class="sc">$</span>lisa_pov <span class="ot">&lt;-</span> lisa<span class="sc">$</span>lisa_pov <span class="sc">%&gt;%</span> </span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace_na</span>(<span class="st">"Not significant"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we can plot the classification for each census tract with <code>library(ggplot2)</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Poverty Rate LISA Plot</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>lisa<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(brook_shape) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>lisa_pov)) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"pink"</span>,<span class="st">"lightblue"</span>, <span class="st">"blue"</span>,<span class="st">"NA"</span>), <span class="at">name=</span><span class="st">"Clusters or </span><span class="sc">\n</span><span class="st">Outliers"</span>) <span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Local Spatial Autocorrelation in Brooklyn's Poverty Rate"</span>) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>lisa<span class="fl">.1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter4_files/figure-html/lisa%20plot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Each classification is visually represented in the plot above. White census tracts have no significant spatial autocorrelation, light blue tracts are Low-High, blue tracts are Low-Low, pink tracts are High-Low, and red tracts are High-High. Many of the clusters of high poverty census tracts are the same tracts that we pointed out when looking at our basic maps, but we now have a more rigorous way to detect and visualize clustering and we know the exact type of clustering.</p>
+<p>S far, we have shown several different methods to detect spatial autocorrelation: visually by simply looking at a map of a variable, with global Moran’s <span class="math inline">\(I\)</span>, and with local Moran <span class="math inline">\(I\)</span>’s when we suspect there may be heterogeneity in spatial autocorrelation. Now that we know our data exhibits spatial autocorrelation, we turn to methods to model spatial relationships and purge the autocorrelation from the error term of our models that will surely also contain spatial autocorrelation.</p>
+</section>
+<section id="ols-results" class="level2">
+<h2 class="anchored" data-anchor-id="ols-results">OLS Results</h2>
+<p>We can think of a basic OLS model such as is presented below to start.</p>
+<p><span class="math display">\[poverty_{i}=\alpha + \beta\ bachelor_{i} + \delta X' + \nu_{i}\]</span></p>
+<p>Where: - <span class="math inline">\(poverty_i\)</span> is the poverty rate of census tract <span class="math inline">\(i\)</span> in Brooklyn, New York. - <span class="math inline">\(\alpha\)</span> is the intercept - <span class="math inline">\(\beta\)</span> is our main coefficient of interest - <span class="math inline">\(bachelor_i\)</span> is the percent of census tract <span class="math inline">\(i\)</span>’s population with a bachelor’s degree - <span class="math inline">\(\delta \Lambda'\)</span> is a matrix of covariates and a vector of their coefficients - <span class="math inline">\(\nu_i\)</span> is the error term which we can test for spatial autocorrelation</p>
+<p>Knowing that our data is spatially autocorrelated, we want to use the techniques discussed in previous chapters to purge our error term of spatial autocorrelation. For illustrative purposes, however, we will first estimate the above OLS model. We take the additional step of logging our independent variables to both linearize their relationship with the <span class="math inline">\(poverty\_rate_i\)</span> and to ensure our errors will be as symmetrically distributed as possible. We include covariates for the proportion of a census tracts’ population that is a part of minority identity groups such as African-American, Asian, and Hispanic and a variable that indicates labor force participation. Our analysis here is quite basic and only intended for illustrative purposes. The code below runs two models with <code>lm()</code> and saves the results as <code>ols.</code> and <code>ols.2</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## OLS Models</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.1</span> <span class="ot">&lt;-</span><span class="fu">lm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate), <span class="at">data=</span>brook_shape)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ols<span class="fl">.2</span> <span class="ot">&lt;-</span><span class="fu">lm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin), <span class="at">data=</span>brook_shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then visualize the results with <code>library(stargazer)</code>.</p>
+
+<table style="text-align:center">
+<caption>
+<strong>OLS Results</strong>
+</caption>
+<tbody><tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+Poverty Rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Bachelor’s Degree
+</td>
+<td>
+-0.670<sup>***</sup>
+</td>
+<td>
+-0.602<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.034)
+</td>
+<td>
+(0.036)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Labor Force
+</td>
+<td>
+</td>
+<td>
+0.0004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.008)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+African-American Pop
+</td>
+<td>
+</td>
+<td>
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Asian Pop
+</td>
+<td>
+</td>
+<td>
+-0.005<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Hispanic Pop
+</td>
+<td>
+</td>
+<td>
+0.025<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.003)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.329<sup>***</sup>
+</td>
+<td>
+0.216<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.007)
+</td>
+<td>
+(0.052)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.339
+</td>
+<td>
+0.401
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.338
+</td>
+<td>
+0.397
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.105 (df = 747)
+</td>
+<td>
+0.100 (df = 743)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+383.002<sup>***</sup> (df = 1; 747)
+</td>
+<td>
+99.440<sup>***</sup> (df = 5; 743)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></em></sup><em>p&lt;0.1; <sup><strong></strong></sup><strong>p&lt;0.05; <sup></sup></strong></em>p&lt;0.01
+</td>
+</tr>
+
+</tbody></table>
+<p>Let’s examine the results. Our null hypothesis is that higher rates of residents with bachelor degrees in a census tract will have no effect on a census tract’s poverty rate. In both the simple regression model and the multiple regression model, the bachelor’s degree variable is statistically significant. Our <span class="math inline">\(p\)</span>-value is extremely close to zero and the 95% confidence interval does not cross zero, providing evidence to reject the null hypothesis that there is no relationship between rates of college education and rates of poverty for census tracts in Brooklyn.</p>
+<p>These results indicate that the census tracts that have a high level of bachelor’s degree attainment have lower levels of poverty, as evidenced by the negative coefficient on the bachelor’s degree variable. We are modeling an inherently spatial relationship, however, so we should be concerned that spatial autocorrelation is causing our standard errors to be incorrect. Incorrect standard errors could lead us to commit a Type I error, or rejecting the null hypothesis when we should not. We also ran Moran’s <span class="math inline">\(I\)</span> test and found evidence of statistically significant univariate spatial autocorrelation, so we should be concerned about violating the assumptions of OLS. To account for spatial autocorrelation, we can run a spatial error or a spatial lag model. We estimate both and report the results below.</p>
+</section>
+<section id="spatial-error-results" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-error-results">Spatial Error Results</h2>
+<p>Before we can estimate a spatial error or any spatial regression model, we must calculate weights based on the degree of spatial autocorrelation our variables exhibit. The following code detects spatial autocorrelation and creates weights to be used in the spatial error and spatial lag models. We have used this same code just above and we can no re-use it for estimating our models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Creating Weights for Spatial Autocorrelation</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>brook_nb <span class="ot">&lt;-</span> brook_shape <span class="sc">%&gt;%</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">poly2nb</span>(<span class="fu">c</span>(<span class="st">'cartodb_id'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nb2listw</span>(<span class="at">zero.policy =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now with the weights created, we can estimate the a spatial error model with <code>errorsarlm()</code>. We estimate both a simple and multiple regression model with the same control variables that are included above in the OLS model. There are some additional arguments beyond what is required for an OLS models to properly use <code>errorsarlm()</code>. The weights must be included, which we named brook_nb, we need to specify <code>zero.policy=TRUE</code> which allows weights to equal zero, and omit NAs. The spatial error model is:</p>
+<p><span class="math display">\[poverty\_rate_{i}=\alpha + \beta\ bach\_rate_{i} + \delta X' + \nu_{i}\\ \nu_i=\lambda_{Err}\ W_i\nu_i + \epsilon_i\]</span> The following code estimates the model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Spatial Regression Models</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>spat_err<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate), <span class="at">data=</span>brook_shape,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>spat_err<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl)<span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin), <span class="at">data=</span>brook_shape,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+<table style="text-align:center">
+<caption>
+<strong>Spatial Error Results</strong>
+</caption>
+<tbody><tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+Poverty Rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Bachelor’s Degree
+</td>
+<td>
+-0.740<sup>***</sup>
+</td>
+<td>
+-0.702<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.048)
+</td>
+<td>
+(0.050)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Labor Force
+</td>
+<td>
+</td>
+<td>
+-0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.007)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+African-American Pop
+</td>
+<td>
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Asian Pop
+</td>
+<td>
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Hispanic Pop
+</td>
+<td>
+</td>
+<td>
+0.010<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.003)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.343<sup>***</sup>
+</td>
+<td>
+0.301<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.012)
+</td>
+<td>
+(0.045)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Log Likelihood
+</td>
+<td>
+768.430
+</td>
+<td>
+775.380
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+sigma<sup>2</sup>
+</td>
+<td>
+0.007
+</td>
+<td>
+0.007
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Akaike Inf. Crit.
+</td>
+<td>
+-1,528.860
+</td>
+<td>
+-1,534.759
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wald Test (df = 1)
+</td>
+<td>
+346.893<sup>***</sup>
+</td>
+<td>
+298.453<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+LR Test (df = 1)
+</td>
+<td>
+277.613<sup>***</sup>
+</td>
+<td>
+217.793<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></em></sup><em>p&lt;0.1; <sup><strong></strong></sup><strong>p&lt;0.05; <sup></sup></strong></em>p&lt;0.01
+</td>
+</tr>
+
+</tbody></table>
+<p>The statistically significant, <span class="math inline">\(p &lt;.01\)</span>, estimate of <span class="math inline">\(lambda\)</span> above indicates that the error term was spatially autoregressive. Regardless of any other metric we can use to evaluate the efficacy of this spatial error model in terms of other model specifications, the fact that we have statistically significant evidence of spatial autocorrelation means that this model is preferable to OLS. To further confirm this, we can compare the models in terms of the Akiake Information Criterion (AIC). AIC is a goodness-of-fit measure that shows how well the model fits the data, and we can use it to select the highest performing model. Lower AIC values are associated with better performing models. The output of <code>errorsarlm()</code> using the <code>summary()</code> function in base R provides information about how well the spatial error model <em>and</em> the OLS performed. The AIC for the spatial error model is -1534.8 and the AIC for the OLS model is -1319, indicating that the spatial error model performed better than OLS.</p>
+<p>In terms of substantive results, we can see that the percent Asian variable has lost statistical significance. Overall, however, the substantive conclusions from the OLS model are very much the same as the spatial error model. Our main variable of interest, the proportion of residents with a bachelor’s degree, remains statistically significant at the <span class="math inline">\(p&lt;.01\)</span> level and has a similar, yet not exactly the same, coefficient. Importantly, the standard error is now higher, indicating that we were overestimating our certainty in the OLS model.</p>
+</section>
+<section id="spatial-lag-results" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-lag-results">Spatial Lag Results</h2>
+<p>We can replicate our analysis with the spatial lag model. That model looks like:</p>
+<p><span class="math display">\[poverty\_rate_i=\rho_{lag}\ W_ipoverty\_rate_i + \beta\ _ibach\_rate + \delta X' + \epsilon_i\]</span></p>
+<p>Recall from the previous chapter that we include a weighted lagged dependent variable as an independent variable. We can use nearly the same code as for the spatial error model, expect we substitute <code>lagsarlm()</code> for <code>errorsarlm()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>spat_lag<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">lagsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate), <span class="at">data=</span>brook_shape,</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>spat_lag<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">lagsarlm</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin), <span class="at">data=</span>brook_shape,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">listw =</span> brook_nb, <span class="at">zero.policy =</span> <span class="cn">TRUE</span>, <span class="at">na.action =</span> na.omit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+<table style="text-align:center">
+<caption>
+<strong>Spatial Lag Results</strong>
+</caption>
+<tbody><tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+Poverty Rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Bachelor’s Degree
+</td>
+<td>
+-0.394<sup>***</sup>
+</td>
+<td>
+-0.378<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.038)
+</td>
+<td>
+(0.038)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Labor Force
+</td>
+<td>
+</td>
+<td>
+-0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.007)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+African-American Pop
+</td>
+<td>
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Asian Pop
+</td>
+<td>
+</td>
+<td>
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Hispanic Pop
+</td>
+<td>
+</td>
+<td>
+0.016<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.003)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.160<sup>***</sup>
+</td>
+<td>
+0.125<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.014)
+</td>
+<td>
+(0.046)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Log Likelihood
+</td>
+<td>
+738.477
+</td>
+<td>
+756.824
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+sigma<sup>2</sup>
+</td>
+<td>
+0.008
+</td>
+<td>
+0.007
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Akaike Inf. Crit.
+</td>
+<td>
+-1,468.953
+</td>
+<td>
+-1,497.648
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wald Test (df = 1)
+</td>
+<td>
+242.443<sup>***</sup>
+</td>
+<td>
+197.383<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+LR Test (df = 1)
+</td>
+<td>
+217.706<sup>***</sup>
+</td>
+<td>
+180.682<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></em></sup><em>p&lt;0.1; <sup><strong></strong></sup><strong>p&lt;0.05; <sup></sup></strong></em>p&lt;0.01
+</td>
+</tr>
+
+</tbody></table>
+<p>We can now evaluate the spatial lag model both in terms of how it performs compared to OLS and the spatial error model. The statistical significance of <span class="math inline">\(\rho\)</span>, as indicated by the extremely small <span class="math inline">\(p\)</span>-value, is another sign that our error term in the basic OLS model was autoregressive. This is immediate evidence that the results of this model are more accurate than OLS. We can see that several variables have lost their statistical significance and the coefficient estimate on the percent bachelor’s degree variable is somewhat smaller than before. The standard errors are also higher, indicating a larger degree of uncertainty in our point estimate than basic OLS shows. Turning to our main model selection criteria, the AIC value is lower for the spatial lag model compared to OLS but higher than the AIC in the spatial error model. In sum, the spatial lag model performs better and is preferable to OLS, but the spatial error model is the best performing model overall. For any given research project, authors should present all three models and consider a more advanced spatial regression model to provide further robustness checks and ensure readers that results are consistent across varying model specifications.</p>
+<p>To that end, we present all three models in the same table for ease of analysis here:</p>
+
+<table style="text-align:center">
+<caption>
+<strong>All Model Results</strong>
+</caption>
+<tbody><tr>
+<td colspan="7" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="6">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="6" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="6">
+Poverty Rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>OLS</em>
+</td>
+<td colspan="2">
+<em>spatial</em>
+</td>
+<td colspan="2">
+<em>spatial</em>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em></em>
+</td>
+<td colspan="2">
+<em>error</em>
+</td>
+<td colspan="2">
+<em>autoregressive</em>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+<td>
+(4)
+</td>
+<td>
+(5)
+</td>
+<td>
+(6)
+</td>
+</tr>
+<tr>
+<td colspan="7" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Bachelor’s Degree
+</td>
+<td>
+-0.670<sup>***</sup>
+</td>
+<td>
+-0.602<sup>***</sup>
+</td>
+<td>
+-0.740<sup>***</sup>
+</td>
+<td>
+-0.702<sup>***</sup>
+</td>
+<td>
+-0.394<sup>***</sup>
+</td>
+<td>
+-0.378<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.034)
+</td>
+<td>
+(0.036)
+</td>
+<td>
+(0.048)
+</td>
+<td>
+(0.050)
+</td>
+<td>
+(0.038)
+</td>
+<td>
+(0.038)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Labor Force
+</td>
+<td>
+</td>
+<td>
+0.0004
+</td>
+<td>
+</td>
+<td>
+-0.003
+</td>
+<td>
+</td>
+<td>
+-0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.008)
+</td>
+<td>
+</td>
+<td>
+(0.007)
+</td>
+<td>
+</td>
+<td>
+(0.007)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+African-American Pop
+</td>
+<td>
+</td>
+<td>
+-0.002
+</td>
+<td>
+</td>
+<td>
+0.001
+</td>
+<td>
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+<td>
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Asian Pop
+</td>
+<td>
+</td>
+<td>
+-0.005<sup>**</sup>
+</td>
+<td>
+</td>
+<td>
+0.001
+</td>
+<td>
+</td>
+<td>
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Hispanic Pop
+</td>
+<td>
+</td>
+<td>
+0.025<sup>***</sup>
+</td>
+<td>
+</td>
+<td>
+0.010<sup>***</sup>
+</td>
+<td>
+</td>
+<td>
+0.016<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.003)
+</td>
+<td>
+</td>
+<td>
+(0.003)
+</td>
+<td>
+</td>
+<td>
+(0.003)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.329<sup>***</sup>
+</td>
+<td>
+0.216<sup>***</sup>
+</td>
+<td>
+0.343<sup>***</sup>
+</td>
+<td>
+0.301<sup>***</sup>
+</td>
+<td>
+0.160<sup>***</sup>
+</td>
+<td>
+0.125<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.007)
+</td>
+<td>
+(0.052)
+</td>
+<td>
+(0.012)
+</td>
+<td>
+(0.045)
+</td>
+<td>
+(0.014)
+</td>
+<td>
+(0.046)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="7" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+<td>
+749
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.339
+</td>
+<td>
+0.401
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.338
+</td>
+<td>
+0.397
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Log Likelihood
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+768.430
+</td>
+<td>
+775.380
+</td>
+<td>
+738.477
+</td>
+<td>
+756.824
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+sigma<sup>2</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+0.007
+</td>
+<td>
+0.007
+</td>
+<td>
+0.008
+</td>
+<td>
+0.007
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Akaike Inf. Crit.
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+-1,528.860
+</td>
+<td>
+-1,534.759
+</td>
+<td>
+-1,468.953
+</td>
+<td>
+-1,497.648
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.105 (df = 747)
+</td>
+<td>
+0.100 (df = 743)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+383.002<sup>***</sup> (df = 1; 747)
+</td>
+<td>
+99.440<sup>***</sup> (df = 5; 743)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Wald Test (df = 1)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+346.893<sup>***</sup>
+</td>
+<td>
+298.453<sup>***</sup>
+</td>
+<td>
+242.443<sup>***</sup>
+</td>
+<td>
+197.383<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+LR Test (df = 1)
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+277.613<sup>***</sup>
+</td>
+<td>
+217.793<sup>***</sup>
+</td>
+<td>
+217.706<sup>***</sup>
+</td>
+<td>
+180.682<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td colspan="7" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="6" style="text-align:right">
+<sup><em></em></sup><em>p&lt;0.1; <sup><strong></strong></sup><strong>p&lt;0.05; <sup></sup></strong></em>p&lt;0.01
+</td>
+</tr>
+
+</tbody></table>
+</section>
+<section id="geographically-weighted-regression" class="level2">
+<h2 class="anchored" data-anchor-id="geographically-weighted-regression">Geographically Weighted Regression</h2>
+<p>Following our discussion of the two main workhorse models of spatial regression, the spatial error and the spatial lag models, we talked about several more advanced techniques to estimate spatial relationships that contain a high degree of spatial autocorrelation or have heterogeneity (LISA) in their spatial autocorrelation. We now end our applied section with showing how to implement one of the most common and poweful of the more advanced models: the GWR model. We start by estimating a geographically weighted regression model, compare its performance to the above models, and visualize the results. <code>library(GWmodel)</code> in tandem with <code>library(spdep)</code> provides the tools needed to estimate a geographically weighted regression model. We first need to remove all NAs from the dataset to accurately calculate the weights.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove all the NAs in the dataset</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>brook_shape_no_na <span class="ot">&lt;-</span> brook_shape <span class="sc">%&gt;%</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now that we have removed the NAs, we can calculate the weights for each unit. Remember: GWR models run separate regressions for each spatial unit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate an optimal bandwidth</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>weights <span class="ot">&lt;-</span> GWmodel<span class="sc">::</span><span class="fu">bw.gwr</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> brook_shape_no_na <span class="sc">%&gt;%</span> </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                           sf<span class="sc">::</span><span class="fu">as_Spatial</span>(), </span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">approach =</span> <span class="st">'AICc'</span>, <span class="at">kernel =</span> <span class="st">'bisquare'</span>, </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">adaptive =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Adaptive bandwidth (number of nearest neighbours): 470 AICc value: -1481.673 
+Adaptive bandwidth (number of nearest neighbours): 298 AICc value: -1565.594 
+Adaptive bandwidth (number of nearest neighbours): 191 AICc value: -1621.487 
+Adaptive bandwidth (number of nearest neighbours): 125 AICc value: -1658.369 
+Adaptive bandwidth (number of nearest neighbours): 84 AICc value: -1666.586 
+Adaptive bandwidth (number of nearest neighbours): 59 AICc value: -1639.162 
+Adaptive bandwidth (number of nearest neighbours): 100 AICc value: -1667.002 
+Adaptive bandwidth (number of nearest neighbours): 109 AICc value: -1663.021 
+Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 
+Adaptive bandwidth (number of nearest neighbours): 90 AICc value: -1668.185 
+Adaptive bandwidth (number of nearest neighbours): 96 AICc value: -1666.886 
+Adaptive bandwidth (number of nearest neighbours): 92 AICc value: -1668.245 
+Adaptive bandwidth (number of nearest neighbours): 94 AICc value: -1667.665 
+Adaptive bandwidth (number of nearest neighbours): 92 AICc value: -1668.245 
+Adaptive bandwidth (number of nearest neighbours): 93 AICc value: -1668.509 </code></pre>
+</div>
+</div>
+<p>Now that we have the weights calculated, we can run the main GWR model. The code and results to run the model and display the results are below. Unfortunately, we cannot use <code>library(stargazer)</code> to create a nicely formatted table for GWR models due to the nature and complexity of the output.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gwr_model <span class="ot">&lt;-</span> GWmodel<span class="sc">::</span><span class="fu">gwr.basic</span>(poverty_rate<span class="sc">~</span><span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> bach_rate) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> popinlabou) <span class="sc">+</span>  </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> africaninl) <span class="sc">+</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> asianinlab) <span class="sc">+</span> <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">+</span> hispanicin),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                                <span class="at">data =</span> brook_shape_no_na <span class="sc">%&gt;%</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                                sf<span class="sc">::</span><span class="fu">as_Spatial</span>(), </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bw =</span> weights, <span class="at">kernel =</span> <span class="st">"bisquare"</span>, <span class="at">adaptive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gwr_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   ***********************************************************************
+   *                       Package   GWmodel                             *
+   ***********************************************************************
+   Program starts at: 2022-12-12 03:30:25 
+   Call:
+   GWmodel::gwr.basic(formula = poverty_rate ~ log(1 + bach_rate) + 
+    log(1 + popinlabou) + log(1 + africaninl) + log(1 + asianinlab) + 
+    log(1 + hispanicin), data = brook_shape_no_na %&gt;% sf::as_Spatial(), 
+    bw = weights, kernel = "bisquare", adaptive = TRUE)
+
+   Dependent (y) variable:  poverty_rate
+   Independent variables:  bach_rate popinlabou africaninl asianinlab hispanicin
+   Number of data points: 749
+   ***********************************************************************
+   *                    Results of Global Regression                     *
+   ***********************************************************************
+
+   Call:
+    lm(formula = formula, data = data)
+
+   Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.21076 -0.07050 -0.00425  0.05426  0.38188 
+
+   Coefficients:
+                         Estimate Std. Error t value Pr(&gt;|t|)    
+   (Intercept)          0.2155755  0.0521394   4.135 3.96e-05 ***
+   log(1 + bach_rate)  -0.6015869  0.0360114 -16.705  &lt; 2e-16 ***
+   log(1 + popinlabou)  0.0003792  0.0084544   0.045   0.9642    
+   log(1 + africaninl) -0.0021506  0.0017472  -1.231   0.2187    
+   log(1 + asianinlab) -0.0053706  0.0020896  -2.570   0.0104 *  
+   log(1 + hispanicin)  0.0254460  0.0031623   8.047 3.37e-15 ***
+
+   ---Significance stars
+   Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+   Residual standard error: 0.09978 on 743 degrees of freedom
+   Multiple R-squared: 0.4009
+   Adjusted R-squared: 0.3969 
+   F-statistic: 99.44 on 5 and 743 DF,  p-value: &lt; 2.2e-16 
+   ***Extra Diagnostic information
+   Residual sum of squares: 7.397933
+   Sigma(hat): 0.09951646
+   AIC:  -1318.966
+   AICc:  -1318.815
+   BIC:  -1989.304
+   ***********************************************************************
+   *          Results of Geographically Weighted Regression              *
+   ***********************************************************************
+
+   *********************Model calibration information*********************
+   Kernel function: bisquare 
+   Adaptive bandwidth: 93 (number of nearest neighbours)
+   Regression points: the same locations as observations are used.
+   Distance metric: Euclidean distance metric is used.
+
+   ****************Summary of GWR coefficient estimates:******************
+                             Min.    1st Qu.     Median    3rd Qu.   Max.
+   Intercept           -0.3718597  0.1125074  0.2935530  0.4912229 1.1779
+   log(1 + bach_rate)  -2.4709224 -1.1641975 -0.8129934 -0.5343122 0.5593
+   log(1 + popinlabou) -0.2539616 -0.0165205  0.0190715  0.0456808 0.3136
+   log(1 + africaninl) -0.3245012 -0.0152142 -0.0010035  0.0120940 0.1672
+   log(1 + asianinlab) -0.0266489 -0.0030611  0.0015387  0.0068593 0.0312
+   log(1 + hispanicin) -0.0663042 -0.0066083  0.0064852  0.0169869 0.0639
+   ************************Diagnostic information*************************
+   Number of data points: 749 
+   Effective number of parameters (2trace(S) - trace(S'S)): 141.6189 
+   Effective degrees of freedom (n-2trace(S) + trace(S'S)): 607.3811 
+   AICc (GWR book, Fotheringham, et al. 2002, p. 61, eq 2.33): -1668.509 
+   AIC (GWR book, Fotheringham, et al. 2002,GWR p. 96, eq. 4.22): -1815.489 
+   BIC (GWR book, Fotheringham, et al. 2002,GWR p. 61, eq. 2.34): -1959.431 
+   Residual sum of squares: 3.364251 
+   R-square value:  0.7275574 
+   Adjusted R-square value:  0.6639291 
+
+   ***********************************************************************
+   Program stops at: 2022-12-12 03:30:26 </code></pre>
+</div>
+</div>
+<p>The output, shown above, gives a wealth of information about regression results, goodness-of-fit metrics, and the more meta information about the estimation procedure. Let’s go over some of it now. We see first the results of the global regression and below, in the second section, we see the results of the GWR. Importantly, the GWR output gives us a range of coefficient estimates since we have conducted an individual regression model for each census tract. The results that we see in the second table are actually more like descriptive statistics of the distribution of estimated coefficients and other regression result metrics. We can also see the more meta information of our GWR models such as the adaptive bandwidth, the kernel function, and the distance metric. We have left all of these values default as suggested by Fotheringham et al.&nbsp;(2002) &amp; Goovaerts (2008).</p>
+<p>In terms of model selection, the GWR performs better based on AIC values that the other three models that we have estimated, with the AIC for the GWR model being the lowest of all models tested. This result indicates that the GWR models is the best performing model compared to OLS, the spatial lag, and the spatial error models. The adjusted <span class="math inline">\(R^2\)</span> value is also higher in the GWR model as compared to OLS. We also have a higher coefficient to standard error ratio giving us a higher t-value and a more certain point estimate. While the coefficients have not changed drastically from the OLS model results, we know through the numerous techniques to detect and estimate spatial autocorrelation, that our relationship exhibited spatial autoregressive qualities and is now more accurate. We were able to increase the performance of our models, in terms of AIC, by employing GWR, showing the benefits of employing more advanced spatial modeling techniques.</p>
+</section>
+<section id="mapping-geographically-weighted-regression-results" class="level2">
+<h2 class="anchored" data-anchor-id="mapping-geographically-weighted-regression-results">Mapping Geographically Weighted Regression Results</h2>
+<p>GWR models offer a key benefit in unit level metrics that allow us to evaluate and visualize our model results on a localized level. Accordingly, an important and powerful aspect of <code>library(GWmodel)</code> is the ability to easily visualize results for each spatial unit. We first need to process our model results into a form that can extract coefficients, standard errors, goodness-of-fit, and other metrics from our GWR model. Specifically, <code>spplot()</code> cannot recognize the names of our variables resulting from the GWR model estimation (DGES 2022), so we need to change the names, which the following code does.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Processing GWR model for visualization</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>gwr_proc_data <span class="ot">&lt;-</span> gwr_model<span class="sc">$</span>SDF<span class="sc">@</span>data</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Changing Bachelor's Degree Variable Name</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>coefbach <span class="ot">&lt;-</span> gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">log(1 + bach_rate)</span><span class="st">`</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Calculating p-values</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>bachp <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">log(1 + bach_rate)_TV</span><span class="st">`</span>), </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                            <span class="at">df =</span> <span class="fu">dim</span>(gwr_proc_data)[<span class="dv">1</span>] <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Creating a standard error variable</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>gwr_proc_data<span class="sc">$</span>sebach <span class="ot">&lt;-</span> gwr_proc_data<span class="sc">$</span><span class="st">`</span><span class="at">log(1 + bach_rate)_SE</span><span class="st">`</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Finalizing the preprocessing</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>processed_gwr_results <span class="ot">&lt;-</span> gwr_model<span class="sc">$</span>SDF</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>processed_gwr_results<span class="sc">@</span>data <span class="ot">&lt;-</span> gwr_proc_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now that we have the data processed, we end this section with the visualization of the GWR model results. Since we have estimated a series of regression models, we have resulting metrics for every single census tract that we can create maps with. Perhaps one of the richest ways to visualize heterogeneity in spatial autocorrelation is with the following plots that visualize the distributions of our key model results across each census tract in Brooklyn. Visualizing the GWR models results in this fashion is an incredibly powerful technique to show how deleterious spatial autocorrelation can be and to show what localized spatial autocorrelation looks like. We start with mapping localized <span class="math inline">\(R^2\)</span> values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"Local_R2"</span>, <span class="at">main=</span><span class="st">"Local Pseudo R Squared Values"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20r2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Mapping the pseudo <span class="math inline">\(R^2\)</span> values for each census tract shows the heterogeneity in model fit depending on the tract. This adds a level of richness to our understanding of our models because we know that our model specification performs better when estimating the effect of college education rates on poverty rates in some census tracts compared to others.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"coefbach"</span>, <span class="at">main=</span><span class="st">"Bachelor's Degree Estimated Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20coef-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The map of estimated coefficients above shows where the effect of college education rates on poverty rates, controlling for all other factors in the model, is the highest and lowest. While our overall coefficient estimate is negative, we can see a cluster in central Brooklyn where the estimated coefficient is positive. This tells us that bachelor’s degree attainment does not always lead to lower levels of poverty and its effect is heterogeneous across spatial units. We can also further see clustering of high and low coefficients in different locations around the borough.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"sebach"</span>, <span class="at">main=</span><span class="st">"Standard Error of Bachelor's Degree Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20se-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This third map shows the distribution of standard errors across census tracts. We see the lowest standard errors on the entire west side of Brooklyn with the highest standard errors in the northeastern parts of the borough. We can use this map to visualize the distribution of our uncertainty in our estimated coefficients and see where the confidence intervals will be the highest and the lowest. In other words, this is a map of our uncertainty concerning our estimated coefficients.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spplot</span>(processed_gwr_results, <span class="st">"bachp"</span>, <span class="at">main=</span><span class="st">"p-value of Bachelor's Degree Coefficients"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter4_files/figure-html/plotting%20gwr%20results%20p-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Finally, we map the distribution of <span class="math inline">\(p\)</span>-values. We can see extremely low <span class="math inline">\(p\)</span>-values, indicating statistical significance, across the majority of the borough with only a small cluster of census tracts where the rate of college education was not a statistically significant predictor of poverty rates.</p>
+<p>It is an extremely good idea to create these visualizations whenever we run a GWR model so that we can better characterize the full distribution of our model results. Since GWR runs many models, only looking at averaged metrics loses the richness that makes GWR models valuable to researchers.</p>
+</section>
+<section id="concluding-remarks" class="level2">
+<h2 class="anchored" data-anchor-id="concluding-remarks">Concluding Remarks</h2>
+<p>We have presented an applied example that shows how to detect and manage spatial autocorrelation. The analysis presented here is not the only way that spatial data can be analyzed, and we only considered one of the more advanced spatial regression models at our disposal. It is up to researchers to make wise decisions about model specification and to be careful in how to control for differing types of spatial autocorrelation. In the final section of this treatment of spatial regression, we consider the contributions to many different fields that spatial regression methods have been vital for.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter3.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Modeling Spatial Relationships</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

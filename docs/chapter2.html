@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Spatial Regression - Spatial Autocorrelation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter3.html" rel="next">
+<link href="./chapter1.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Spatial Autocorrelation</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Spatial Regression</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter1.html" class="sidebar-item-text sidebar-link">Basics of Geospatial Data</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter2.html" class="sidebar-item-text sidebar-link active">Spatial Autocorrelation</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter3.html" class="sidebar-item-text sidebar-link">Modeling Spatial Relationships</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter4.html" class="sidebar-item-text sidebar-link">Poverty &amp; Education in Brooklyn, New York</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#detecting-spatial-autocorrelation" id="toc-detecting-spatial-autocorrelation" class="nav-link active" data-scroll-target="#detecting-spatial-autocorrelation">Detecting Spatial Autocorrelation</a>
+  <ul class="collapse">
+  <li><a href="#global-vs.-local-spatial-autocorrelation" id="toc-global-vs.-local-spatial-autocorrelation" class="nav-link" data-scroll-target="#global-vs.-local-spatial-autocorrelation">Global vs.&nbsp;Local Spatial Autocorrelation</a></li>
+  <li><a href="#global-morans-i-test" id="toc-global-morans-i-test" class="nav-link" data-scroll-target="#global-morans-i-test">Global Morans I Test</a></li>
+  <li><a href="#local-spatial-autocorrelation-lisa" id="toc-local-spatial-autocorrelation-lisa" class="nav-link" data-scroll-target="#local-spatial-autocorrelation-lisa">Local Spatial Autocorrelation (LISA)</a></li>
+  </ul></li>
+  <li><a href="#intuition-and-simulation" id="toc-intuition-and-simulation" class="nav-link" data-scroll-target="#intuition-and-simulation">Intuition and Simulation</a></li>
+  <li><a href="#a-naive-model-of-spatial-data" id="toc-a-naive-model-of-spatial-data" class="nav-link" data-scroll-target="#a-naive-model-of-spatial-data">A Naive Model of Spatial Data</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Spatial Autocorrelation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>Congratulations, you have defined a research question, developed a theory, collected spatial data, visualized your variables of interest with a map, and now you are ready to estimate a causal effect or make some prediction about a spatial relationship. The logical first step is to estimate the workhorse model of social science: ordinary least squares. If your variables contain spatial autocorrelation, which is common in most spatial relationships, the OLS equation for standard errors will not be appropriate, though. This means that your standard errors will be incorrect, resulting in incorrect statistical inference. The same phenomenon is seen with time series data where methods such as <span class="math inline">\(\rho\)</span>-transforming the data or estimating Prais-Winston or Newey-West standard errors is needed to draw accurate inferences. Similar methods can be used to purge spatial autocorrelation from our models. While in time series data, autocorrelation refers to the residuals in time period <span class="math inline">\(t_{-1}\)</span> being correlated with the residuals in time period <span class="math inline">\(t\)</span> (Bailey 2021), in spatial data, autocorrelation refers to the residuals in unit <span class="math inline">\(i\)</span> being correlated with the residuals in unit <span class="math inline">\(j\)</span>.</p>
+<p>In this chapter, we move away from the applied example of education and poverty in Brooklyn in order to introduce one of the most important concepts related to spatial regression: spatial autocorrelation. We start by presenting the theoretical concept of spatial autocorrelation, show how to detect it, and run a simulation to illustrate it. We then introduce a naive OLS model of a spatial relationship and discuss how spatial autocorrelation violates the Gauss-Markov assumption that errors are not correlated with each other. By the end of this chapter you should be comfortable with the concept of spatial autocorrelation, how to detect it, and why it violates the Gauss-Markov assumptions.</p>
+<section id="detecting-spatial-autocorrelation" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="detecting-spatial-autocorrelation">Detecting Spatial Autocorrelation</h2>
+<p>Here, we present the concepts of global and local spatial autocorrelation and detail formal tests to detect them. We also introduce the core packages for working with spatial regression models in <em>R</em>: <code>library(spdep)</code> and <code>library(spatialreg)</code>. We will apply the tests discussed in this chapter to our Brooklyn example in chapter four.</p>
+<section id="global-vs.-local-spatial-autocorrelation" class="level3">
+<h3 class="anchored" data-anchor-id="global-vs.-local-spatial-autocorrelation">Global vs.&nbsp;Local Spatial Autocorrelation</h3>
+<p>Spatial autocorrelation measures the correlation of a variable with itself across space, similar to how serial autocorrelation measures the correlation of a variable with itself across time. Variables that are spatially autocorrelated can either be positively or negatively autocorrelated. If spatial autocorrelation is positive, locations close together have similar, approaching the same, values. If spatial autocorrelation is negative, locations close together have more dissimilar, approaching opposite, values.</p>
+<p>There are two levels of spatial autocorrelation (DGES 2022 &amp; Darmofal 2015): global and local. Global spatial autocorrelation quantifies the degree to which areas that are close by tend to be more alike (Darmofal 2015). This is generally what we mean when we use the term spatial autocorrelation. When we discuss global - as opposed to local autocorrelation - we are talking about the degree of clustering, not on the specific locations of possible clusters. In other words, global autocorrelation is how similar units are, on average, to their neighbors. Detecting and accounting for global autocorrelation is the first step towards accurate statistical inference in spatial regression models.</p>
+<p>In contrast to global autocorrelation, local autocorrelation, also called local indicators of spatial association, or LISA, tells us <em>where</em> clustering is (Anselin 1995). Some clusters of units may exhibit positive autocorrelation while some may exhibit negative autocorrelation and a third group of units may have no autocorrelation at all. Global autocorrelation does not account for this heterogeneity and provides only one unified test statistic for global spatial autocorrelation. LISA, however, estimates localized spatial autocorrelation. Only calculating and taking into account global autocorrelation assumes that spatial autocorrelation is homogeneous throughout the distribution of spatial units. This assumption may not hold, so a local test for autocorrelation should always be used. Further, even if our variable does not exhibit global autocorrelation or clustering, we can use LISA to find possible localized clusters (Anselin 1995). The exact tests for global and local autocorrelation are discussed next.</p>
+</section>
+<section id="global-morans-i-test" class="level3">
+<h3 class="anchored" data-anchor-id="global-morans-i-test">Global Morans I Test</h3>
+<p>The first test that we consider is Moran’s <span class="math inline">\(I\)</span> test. Moran’s <span class="math inline">\(I\)</span> test, created by Australian statistician <a href="https://en.wikipedia.org/wiki/P._A._P._Moran">P. A. P. Moran</a> is a formal test for spatial autocorrelation (Moran 1950). Global Moran’s <span class="math inline">\(I\)</span> statistic measures spatial autocorrelation simultaneously based on both variable locations and variable values (Darmofal 2015). Given a set of variables and an associated attribute, Moran’s <span class="math inline">\(I\)</span> indicates if the pattern of spatial autocorrelation is clustered, dispersed, or random (Darmofal 2015).</p>
+<p>The null hypothesis for this test is that there is random disturbances, or no spatial autocorrelation, and a statistically significant Moran’s <span class="math inline">\(I\)</span> estimate rejects that null hypothesis. As an introductory statistics refresher, <span class="math inline">\(p\)</span>-values are numerical approximations of the area under the curve for a known distribution, limited by the test statistic. In other words, <span class="math inline">\(p\)</span>-values for Moran’s <span class="math inline">\(I\)</span> statistic tell us the probability that we would have seen the extremity of the degree of autocorrelation that we have seen given there was truly no autocorrelation. Similar to standard OLS models, a <span class="math inline">\(p\)</span>-value <span class="math inline">\(&lt;.05\)</span> is evidence that we can reject the null hypothesis that there is no spatial autocorrelation. While this is the conventional confidence level, researchers can also consider <span class="math inline">\(p&lt;.01\)</span> or <span class="math inline">\(p&lt;.001\)</span> confidence levels to be even more confident that there is, in fact, spatial autocorrelation. Usually we want to see a <span class="math inline">\(p\)</span>-value to be as low as possible so that we can be more confident that are result is not due to random chance, but, with testing for spatial autocorrelation, this is perhaps a mistake. We should try to be as aware of possible spatial autocorrelation as possible, meaning we may want to have a confidence level closer to <span class="math inline">\(p&lt;.1\)</span>. Setting the threshold <span class="math inline">\(p\)</span>-value higher means that we are more likely to reject the null hypothesis for spatial autocorrelation and more likely to choose to estimate some type of spatial regression model to account for even modestly autocorrelated residuals.</p>
+<p>Moran’s Global <span class="math inline">\(I\)</span> is calculated based on a weighted matrix with unit <span class="math inline">\(i\)</span> and neighbor <span class="math inline">\(j\)</span> (Darmofal 2015). Similarities between units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are calculated as the product of the differences between <span class="math inline">\(y_i\)</span> and <span class="math inline">\(y_j\)</span> with the overall mean (Darmofal 2015).</p>
+<p><span class="math display">\[I=\frac{N}{W}\frac{\sum_i^{N}\sum_j^{N}w_{ij}(y_i-\bar{y})(y_j-\bar{y})}{\sum_i^{N}(y_i-\bar{y})}\]</span></p>
+<ul>
+<li><span class="math inline">\(N\)</span> is the number of units indexed by <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span></li>
+<li><span class="math inline">\(y\)</span> is the variable of interest</li>
+<li><span class="math inline">\(\bar{y}\)</span> is the average of the variable of interest</li>
+<li><span class="math inline">\(w_{ij}\)</span> is a matrix of spatial weights with zeroes on the diagonal</li>
+<li><span class="math inline">\(W\)</span> is the sum of all <span class="math inline">\(w_{ij}\)</span> such that <span class="math inline">\({W=\sum _{i=1}^{N}\sum _{j=1}^{N}{w_{ij}}}\)</span></li>
+</ul>
+<p>Defining the exact weights matrix is vital to calculating Moran’s <span class="math inline">\(I\)</span> because the value of <span class="math inline">\(I\)</span> depends on the assumptions built into the spatial weights matrix <span class="math inline">\(w_{ij}\)</span> (Darmofal 2015). The spatial weights matrix constrains the number of neighbors being considered and weights appropriately based on those constraints. In other words, we expect a unit, <span class="math inline">\(i\)</span>’s closest neighbors to be the most similar to <span class="math inline">\(i\)</span>, while further distant neighbors may not be at all related.</p>
+<p>There are several methods that can be used to assign weights. The most basic approach to weighting is to assign a weight of 1 if neighbors are nearby and a weight of 0 otherwise (DGES 2022). Another, slightly more advanced method, is to assign weights based on a <span class="math inline">\(k\)</span> nearest neighbors approach where the <span class="math inline">\(k\)</span> nearest neighbors receive a weight of 1 and 0 otherwise (DGES 2022). The decision of weighting is important because the estimate, and resulting <span class="math inline">\(p\)</span>-value of Moran’s <span class="math inline">\(I\)</span> statistic is heavily dependent upon weighting. This means our inference of whether or not our data has spatial autocorrelation is dependent, partly, upon how we choose to weight similarities and differences between neighbors. <code>library(spdep)</code> makes this process computationally easy and offers functions to weight based on each option enumerated above. <code>spdep::poly2nb()</code> evaluates the spatial distribution of a variable to estimate how similar a unit, <span class="math inline">\(i\)</span> is to their neighbor, <span class="math inline">\(j\)</span>. <code>spdep::nb2listw()</code> then constructs the weights based on these estimated similarities. Each function takes specific arguments concerning how to weight, how much to weight nearby neighbors, and whether to weight far away neighbors as a low number or zero. For the <span class="math inline">\(k\)</span> nearest neighbors approach, <code>spdep::knearneigh()</code> and <code>spdep::knn2nb()</code> can construct the weights for neighbors, only if you have point data.</p>
+<p>Calculating Moran’s <span class="math inline">\(I\)</span> statistic by hand is a quite cumbersome process, so we focus on the function <code>spdep::moran.test()</code> which takes the result of the above two functions and returns the estimate of <span class="math inline">\(I\)</span> and the resulting <span class="math inline">\(p\)</span>-value. The sign of the estimate tells us the direction of autocorrelation and the absolute value tells us the degree. If the estimate of <span class="math inline">\(I\)</span> is positive, spatial autocorrelation is positive and if the estimate of <span class="math inline">\(I\)</span> is negative, spatial autocorrelation is negative. The higher the absolute value of <span class="math inline">\(I\)</span>, the more severe the degree of autocorrelation. Importantly, global Moran’s <span class="math inline">\(I\)</span> is bounded by <span class="math inline">\([-1,1]\)</span> with -1 being perfect negative autocorrelation and 1 being perfect positive autocorrelation (Darmofal 2015). If the resulting <span class="math inline">\(p\)</span>-value is <span class="math inline">\(p&lt;.05\)</span>, we can reject the null hypothesis that there is no spatial autocorrelation. Once we have evidence that our dependent variable exhibits a statistically significant degree of spatial autocorrelation, we can, and should, consider utilizing a spatial regression method.</p>
+</section>
+<section id="local-spatial-autocorrelation-lisa" class="level3">
+<h3 class="anchored" data-anchor-id="local-spatial-autocorrelation-lisa">Local Spatial Autocorrelation (LISA)</h3>
+<p>One weakness of Moran’s global <span class="math inline">\(I\)</span> is that it is assumes homogeneity in spatial autocorrelation. The global <span class="math inline">\(I\)</span> statistic will not tell us if different clusters of neighbors are autocorrelated significantly differently than other clusters of neighbors, resulting in an estimate of <span class="math inline">\(I\)</span> and its <span class="math inline">\(p\)</span>-value not accurately characterizing localized spatial autocorrelation. For a better test statistic, we turn to LISA (Anselin 1995), or local indicators of spatial association which calculates Moran’s <span class="math inline">\(I\)</span> for each individual spatial unit based on the following formula:</p>
+<p><span class="math display">\[I=\sum_{i=1}^{N}{\frac{I_{i}}{N}}\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(I_i\)</span> is the local Moran’s I statistics and <span class="math inline">\(N\)</span> is the number of spatial units.</li>
+</ul>
+<p>We use LISA when we believe that the assumption that autocorrelation is constant across all spatial units is not accurate for our data. The resulting measure identifies localized clusters of spatial autocorrelation (Anselin 1995). Beyond using local Moran’s <span class="math inline">\(I\)</span> when the homogeneity assumption is violated, there are several benefits of calculating LISA. When we are thinking about local spatial autocorrelation, there are four different types of cluster relationships (Anselin 2020) that only LISA will show: High-High, or units that have high values of a variable with neighbors that also have high values; High-Low, or units that have high values of a variable with neighbors that have low values; Low-High, or units that have low values of a variable with neighbors that have high values; and Low-Low, or units that have low values of a variable with neighbors that also have low values. Local Moran’s <span class="math inline">\(I\)</span>, calculated with <code>spdep::localmoran()</code> can identify these different types of clusters, map them, and better characterize the spatial autocorrelation that we are seeing in our variable. Local Moran’s <span class="math inline">\(I\)</span> can also be used to identify local clusters and outliers that are surrounded by opposite values (Anselin 1995).</p>
+<p>Just as <code>library(spdep)</code> makes calculating global autocorrelation straightforward and easy, LISA is easily calculated with <code>localmoran()</code>. As shown in the applied section in the fourth chapter, we can visualize local autocorrelation easily with <code>library(ggplot2)</code>. The main goal of utilizing methods to calculate LISA is to determine the best choice of model selection, as not all spatial models account for localized spatial autocorrelation.</p>
+</section>
+</section>
+<section id="intuition-and-simulation" class="level2">
+<h2 class="anchored" data-anchor-id="intuition-and-simulation">Intuition and Simulation</h2>
+<p>Here we see three renditions with different distributions of outcome variables in a <code>5x5</code> matrix of grid cells.<br>
+The first matrix has two clear clusters of data. Another way to look at it in the context of discussion above is - the neighbors have values very similar to each other in the two parts of the matrix. Hence, we see a high positive value of Global Moran as given in above the figure.</p>
+<p>Similarly, in the second figure, we see that all of the immediate neighbors (that is those that share boundary with a cell), have values different from the cell under observation. Consequently, we see a global Moran’s <span class="math inline">\(I\)</span> statistic of <code>-1</code>.<br>
+In the third figure we have a bit more random distribution of values. Thus, we see a global Moran’s <span class="math inline">\(I\)</span> statistic close to <code>0</code>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="chapter2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p>To understand the concept of Local Moran’s <span class="math inline">\(I\)</span>, we simulate a different matrix grid. This time, the outcome variable is drawn from a continuous multivariate normal distribution.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The code for this section is adapted from: https://rpubs.com/jguelat/autocorr</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Define function to draw random samples from a multivariate normal</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># distribution</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>rmvn <span class="ot">&lt;-</span> <span class="cf">function</span>(n, <span class="at">mu =</span> <span class="dv">0</span>, <span class="at">V =</span> <span class="fu">matrix</span>(<span class="dv">1</span>)) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">length</span>(mu)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">any</span>(<span class="fu">is.na</span>(<span class="fu">match</span>(<span class="fu">dim</span>(V), p)))) </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"Dimension problem!"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  D <span class="ot">&lt;-</span> <span class="fu">chol</span>(V)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>(<span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> p), <span class="at">ncol =</span> p) <span class="sc">%*%</span> D <span class="sc">+</span> <span class="fu">rep</span>(mu, <span class="fu">rep</span>(n, p)))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up a square lattice region</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>simgrid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(simgrid)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up distance matrix</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>distance <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">dist</span>(simgrid))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate random variable</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>phi <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">rmvn</span>(<span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, n), <span class="fu">exp</span>(<span class="sc">-</span>phi <span class="sc">*</span> distance))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize results</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Xraster <span class="ot">&lt;-</span> <span class="fu">rasterFromXYZ</span>(<span class="fu">cbind</span>(simgrid[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">-</span> <span class="fl">0.5</span>, X))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">#plot(1:100, exp(-phi * 1:100), type = "l", xlab = "Distance", ylab = "Correlation")</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Xraster, <span class="at">main =</span> <span class="st">"Distribution"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>), <span class="at">nrow=</span><span class="dv">3</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">MoranLocal</span>(Xraster, <span class="at">w=</span>f), <span class="at">main =</span> <span class="st">"Local Moran I"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="chapter2_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The plot on the left is the distribution of a continuous random variable on a <code>20x20</code> matrix. The greener the cell the higher the value.<br>
+The plot on the right is a matrix of the same dimension showing Local Moran’s <span class="math inline">\(I\)</span> for each cell. While the interpretation is a bit tricky, we can use the heuristic that the greener the cell, the more similar the immediate boundary sharing neighbors.</p>
+</section>
+<section id="a-naive-model-of-spatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="a-naive-model-of-spatial-data">A Naive Model of Spatial Data</h2>
+<p>Now that we have presented spatial autocorrelation and the tests used to detect it, let’s discuss why OLS is inappropriate to use when modeling spatial relationships. Consider the basic multiple regression model:</p>
+<p><span class="math display">\[Y_{i}=\alpha + \beta\ X_{i} + \delta \Lambda' + \nu_{i}\]</span></p>
+<p>In this model, we have our dependent variable, or outcome concept, <span class="math inline">\(Y_i\)</span>, the intercept, <span class="math inline">\(\alpha\)</span>, or the average of <span class="math inline">\(Y\)</span> when all predictor variables are 0, <span class="math inline">\(\beta\)</span>, the coefficient on our main predictor variable, <span class="math inline">\(X_i\)</span>, <span class="math inline">\(\delta \Lambda '\)</span>, a term for the matrix of covariates and their estimated effects on our dependent variable, and <span class="math inline">\(\nu_i\)</span>, the error term of our model. Knowledge of the properties of OLS is assumed as a prerequisite and a more thorough examination of the Gauss-Markov assumptions is outside the scope of this guide on spatial regression, but, as a refresher, we present the Gauss-Markov assumptions for OLS to be the best linear unbiased estimator below (Greene 2018).</p>
+<ul>
+<li>Assumption I: Linearity
+<ul>
+<li><span class="math inline">\(y=X\beta+\epsilon\)</span></li>
+</ul></li>
+<li>Assumption II: Full Rank
+<ul>
+<li><span class="math inline">\(X\)</span> is a <span class="math inline">\(n\times k\)</span> matrix with rank <span class="math inline">\(k\)</span></li>
+</ul></li>
+<li>Assumption III: Exogeneity
+<ul>
+<li><span class="math inline">\(E[\epsilon_{i}|X]=0\)</span></li>
+</ul></li>
+<li><strong>Assumption IV: Homoscedasticity and No Autocorrelation</strong>
+<ul>
+<li><span class="math inline">\(E[e_ie_j|X]=0\)</span></li>
+</ul></li>
+<li>Assumption V: Data Generating Process
+<ul>
+<li><span class="math inline">\(X\)</span> may be fixed or random</li>
+</ul></li>
+<li>Assumption VI: Errors Normally Distributed
+<ul>
+<li><span class="math inline">\(\epsilon | X \sim N[0, \sigma^2I]\)</span></li>
+</ul></li>
+</ul>
+<p>While its important all of these assumptions are met, the key assumption to notice for our purposes here is <em>Assumption IV: Homoscedasticity and No Autocorrelation.</em> In order for OLS to be the best linear unbiased estimator (BLUE), the errors must have constant variance and not be correlated with one another. Errors that do not have constant variance are called heteroscedastic errors. Autocorrelation refers to errors being correlated with one another. In the time series context, as mentioned above, autocorrelation refers to when the errors in <span class="math inline">\(t_1\)</span> are correlated with the errors in <span class="math inline">\(t_{-1}\)</span> (Bailey 2021). This is a problem for spatial units as well. As Waldo Tobler (1970) says, “everything is related to everything else, but near things are more related than distant things.” This means that we can expect clusters in our distribution of our variables of interest across our spatial units. If our data exhibits this type of clustering, we violate at least Assumption IV and possibly a few others.</p>
+<p>For example, look at the Brooklyn maps in chapter one. The northeast of Brooklyn is a cluster of college educated New Yorkers, suggesting some degree of spatial autocorrelation. When our data is spatially autocorrelated, as long as the other assumptions are not violated, OLS will give us unbiased estimates of <span class="math inline">\(\beta\)</span>, but our standard errors will be inaccurate due to the no autocorrelation assumption being broken. Using a naive OLS model in this way will lead to possible incorrect statistical inference. More specifically, <span class="math inline">\(\nu_i\)</span> in the model above contains the spatial autocorrelation between units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> that make OLS inappropriate for estimating a relationship between <span class="math inline">\(X_i\)</span> and <span class="math inline">\(Y_i\)</span>. The resulting correlation of the error term must be obviated before we can estimate correct standard errors.</p>
+<p>Staking ones academic reputation or making policy decisions based on a naive estimate of a spatial relationship risks a researcher losing credibility due to inaccuracy. Further, false inference could lead a city government to build a new police station in a sub-optimal location based on a poorly estimated spatial model. Spurious relationships are also likely to be detected because both the dependent and the independent variables in the model are correlated spatially. Due to the risks of inaccuracy, it is vitally important that researchers do not utilize basic OLS models when estimating a relationship that exhibits spatial autocorrelation. Spatial autocorrelation, and spatial regression more broadly, is largely an issue of ensuring accuracy in statistical inference made from our model results.</p>
+<p>The goal of this section was to introduce the concepts of spatial autocorrelation, the tests to detect spatial autocorrelation, review the Gauss-Markov assumptions, and show why researchers need to be careful when estimating spatial relationships that exhibit spatial autocorrelation. We now turn to models that can account for spatial autocorrelation.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter1.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Basics of Geospatial Data</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter3.html" class="pagination-link">
+        <span class="nav-page-text">Modeling Spatial Relationships</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
